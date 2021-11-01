@@ -8,8 +8,10 @@ import com.bootcampproject.bootcamp_project.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
 public class Bootstrap implements ApplicationRunner {
     private final UserService userService;
     private final RoleService roleService;
+    @Autowired
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -43,7 +47,7 @@ public class Bootstrap implements ApplicationRunner {
                     .firstName("Admin")
                     .lastName("admin")
                     .email(adminEmail)
-                    .password("admin")
+                    .password(bCryptPasswordEncoder.encode("admin"))
                     .build(), roleAdmin);
         }
 
@@ -52,7 +56,7 @@ public class Bootstrap implements ApplicationRunner {
                     .firstName("Customer")
                     .lastName("customer")
                     .email(customerEmail)
-                    .password("customer")
+                    .password(bCryptPasswordEncoder.encode("customer"))
                     .build(), roleCustomer);
         }
 
@@ -61,7 +65,7 @@ public class Bootstrap implements ApplicationRunner {
                     .firstName("Seller")
                     .lastName("seller")
                     .email(sellerEmail)
-                    .password("seller")
+                    .password(bCryptPasswordEncoder.encode("seller"))
                     .build(), roleSeller);
         }
 
