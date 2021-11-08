@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -47,6 +48,9 @@ public class User extends AuditEntity {
     private Boolean isLocked;
     private Integer invalidAttemptCount;
 
+    private String forgotPasswordToken;
+    private Long forgotPasswordGeneratedTokenAt;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "user_id")
     private Seller seller;
@@ -63,8 +67,6 @@ public class User extends AuditEntity {
             joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "roleID", referencedColumnName = "id"))
     private List<Role> roles;
-
-    // private String role;
 
 
 }

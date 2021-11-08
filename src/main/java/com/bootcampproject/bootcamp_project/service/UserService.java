@@ -14,10 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,6 +38,7 @@ public class UserService implements UserServiceInterface {
     @Autowired
     private CustomerRepository customerRepository;
 
+
     public UserService() {
         this.executorService = Executors.newSingleThreadExecutor();
     }
@@ -49,25 +47,6 @@ public class UserService implements UserServiceInterface {
     public boolean isUserByEmailExists(String email) {
         return userRepository.countByEmail(email) > 0;
     }
-
-//    @Transactional
-//    public User save(UserDto userDto, Role role) {
-////        User user= new User();
-////        user.setEmail(userDto.getEmail());
-//        User user = User.builder()
-//                .email(userDto.getEmail()) // returning object of user
-//                .firstName(userDto.getFirstName())
-//                .middleName(userDto.getMiddleName())
-//                .lastName(userDto.getLastName())
-//                //.password(userDto.getPassword())
-//                .password(passwordEncoder.encode(userDto.getPassword()))
-//                .roles(Collections.singletonList(role))
-//                .build();
-//        user.setIsActive(true);
-//
-//        return userRepository.save(user);
-//    }
-
 
     @Transactional
     public void delete(Long id) {
@@ -116,6 +95,13 @@ public class UserService implements UserServiceInterface {
         return true;
     }
 
+    private void sendTokenViaEmail(String email, UUID uuid) {
+        String url = "http://localhost:8080/customer/activate/" + uuid.toString();
+        executorService.submit(() -> {
+            emailService.sendSimpleMessage(email, "Welcome to online shopping site", "Hi,\nPlease activate your account by using the following link\n" + url);
+        });
+    }
+
     @Transactional
     @Override
     public Boolean saveSeller(SellerDto sellerDto) {
@@ -150,7 +136,12 @@ public class UserService implements UserServiceInterface {
         roles.add(role);
         user.setRoles(roles);
         userRepository.save(user);
+        sendEmail(user.getEmail());
         return true;
+    }
+
+    private void sendEmail(String email) {
+        emailService.sendSimpleMessage(email, "Welcome to online shopping site", "Hi,\\nWaiting for approval");
     }
 
     public Boolean saveAdmin(UserDto userDto) {
@@ -169,12 +160,6 @@ public class UserService implements UserServiceInterface {
         return true;
     }
 
-    private void sendTokenViaEmail(String email, UUID uuid) {
-        String url = "http://localhost:8080/customer/activate/" + uuid.toString();
-        executorService.submit(() -> {
-            emailService.sendSimpleMessage(email, "Welcome to online shopping site", "Hi,\nPlease activate your account by using the following link\n" + url);
-        });
-    }
 
     @Transactional
     public String activateAccount(String token) {
@@ -202,5 +187,72 @@ public class UserService implements UserServiceInterface {
         userRepository.save(customer.getUser());
         return "Customer activated Successfully";
     }
+
+
+    private void sendTokenViaEmailToUser(String email, UUID uuid) {
+        String url = "http://localhost:8080/registration/update-password/" + uuid.toString();
+        executorService.submit(() -> {
+            emailService.sendSimpleMessage(email, "Welcome to online shopping site", "Hi,\nUse link mentioned below to restore your password\n" + url);
+        });
+    }
+
+    public String passwordRestore(String email) {
+        if (Objects.isNull(email))
+            return "No email provided";
+
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (!userOptional.isPresent())
+            return "Invalid email address";
+
+        User user = userOptional.get();
+
+        if (user.getForgotPasswordToken() == null) {
+            sendToken(user);
+            return "Password restore link has been sent over email!";
+        } else {
+            sendToken(user);
+            return "A new email has been sent with a link set your new password.";
+        }
+    }
+
+    private void sendToken(User user) {
+        UUID uuid = UUID.randomUUID();
+        user.setForgotPasswordToken(uuid.toString());
+        user.setForgotPasswordGeneratedTokenAt(System.currentTimeMillis());
+        userRepository.save(user);
+        sendTokenViaEmailToUser(user.getEmail(), uuid);
+    }
+
+
+    public String updatePassword(String token, String newPassword) {
+        //Case 1: Invalid token
+        Optional<User> userOptional = userRepository.findByForgotPasswordToken(token);
+        if (!userOptional.isPresent())
+            return "Invalid token!";
+
+        //Case 1 completed
+
+        User user = userOptional.get();
+
+        //Case 2: Expired token
+
+        if (user.getForgotPasswordGeneratedTokenAt() < System.currentTimeMillis() - (1 * 60 * 1000)) {
+            sendToken(user);
+            return "Your token has expired. A new token has been shared over email.";
+        }
+        //Case 2 completed
+
+        //Case 3: Happy Flow
+        user.setPassword(newPassword);
+        user.setForgotPasswordToken(null);
+        user.setForgotPasswordGeneratedTokenAt(null);
+        userRepository.save(user);
+        return "Your password is successfully created!";
+        //Case 3 completed
+    }
 }
+
+
+
+
 
