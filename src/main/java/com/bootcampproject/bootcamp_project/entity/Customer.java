@@ -4,8 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GeneratorType;
 
+import javax.annotation.Generated;
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -13,13 +17,14 @@ import java.util.List;
 //@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer extends AuditEntity {
+public class Customer extends AuditEntity implements Serializable {
     private String contact;
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @MapsId
+
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     @OneToMany(mappedBy = "customerId")
@@ -30,6 +35,10 @@ public class Customer extends AuditEntity {
 
     @OneToOne(mappedBy = "customerId")
     private Cart cart;
+
+    private String token;
+
+    private Long tokenGenerated;
 
 }
 

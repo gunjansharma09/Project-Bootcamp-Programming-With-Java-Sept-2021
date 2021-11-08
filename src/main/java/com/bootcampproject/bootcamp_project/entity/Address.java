@@ -15,8 +15,8 @@ public class Address extends AuditEntity {
     private String addressLine;
     private Integer zipCode;
     private String label;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId")
-    private User userId; // userId
+//    @ManyToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "userId")
+//    private User userId; // userId
 }
 

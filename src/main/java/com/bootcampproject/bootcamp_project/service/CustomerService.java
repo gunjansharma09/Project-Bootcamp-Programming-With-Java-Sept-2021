@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
 @Service
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerService {
@@ -25,15 +24,10 @@ public class CustomerService {
         customer.setContact(customerDto.getContact());
         return customerRepository.save(customer);
     }
-
     @Transactional
     public String delete(Long id) {
         customerRepository.deleteById(id);
         return "success";
     }
 
-//    public Customer update(CustomerDto customerDto)
-//    {
-//        customerRepository.u
-//    }
 }
