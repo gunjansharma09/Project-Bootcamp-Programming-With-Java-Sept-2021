@@ -10,7 +10,7 @@ import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Data
+
 public class RoleService {
 
     private final RoleRepository roleRepository;
@@ -27,4 +27,5 @@ public class RoleService {
                 .authority(authority).build();
         return roleRepository.save(role);
     }
+
 }

@@ -23,7 +23,7 @@ public class User extends AuditEntity {
     @Column(unique = true)
     @NotNull
     @Email(regexp = ".+@.+\\..+")
-   // @Pattern(regexp="[A-Za-z0-9._%-+]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}")
+    // @Pattern(regexp="[A-Za-z0-9._%-+]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}")
     private String email;
 
     @NotNull
@@ -34,11 +34,11 @@ public class User extends AuditEntity {
     @NotNull
     @Size(min = 2, max = 16)
     private String lastName;
-   // @Pattern(regexp = "((?=.\\d)(?=.[a-z])(?=.[A-Z])(?=.[@#$%]).{8,64})", message = "Password must be 8 characters long")
+    // @Pattern(regexp = "((?=.\\d)(?=.[a-z])(?=.[A-Z])(?=.[@#$%]).{8,64})", message = "Password must be 8 characters long")
 
 
     @NotNull
-   @NotBlank(message = "New password is mandatory")
+    @NotBlank(message = "New password is mandatory")
     private String password;
     private Boolean isDeleted;
 
@@ -47,24 +47,24 @@ public class User extends AuditEntity {
     private Boolean isLocked;
     private Integer invalidAttemptCount;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "user_id")
     private Seller seller;
-    @OneToOne(mappedBy = "user")
-    @PrimaryKeyJoinColumn(name = "user_id")
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    //@PrimaryKeyJoinColumn(name = "user_id")
     private Customer customer;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     List<Address> addresses;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "userId",referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "roleID",referencedColumnName = "id"))
+            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "roleID", referencedColumnName = "id"))
     private List<Role> roles;
 
     // private String role;
-
 
 
 }

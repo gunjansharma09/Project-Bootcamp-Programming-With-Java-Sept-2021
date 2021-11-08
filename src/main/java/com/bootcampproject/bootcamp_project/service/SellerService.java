@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
 @Service
-@Data
+
 @RequiredArgsConstructor
-public class SellerService {
+public class SellerService  {
     @Autowired
     private SellerRepository sellerRepository;
 

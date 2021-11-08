@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     //@Autowired
-   // DataSource dataSource;
+    // DataSource dataSource;
     @Autowired
     UserDetailsService userDetailsService;
 
@@ -44,8 +44,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/seller").hasAnyRole(RoleEnum.SELLER.name(), RoleEnum.ADMIN.name())
                 .antMatchers("/customer").hasAnyRole(RoleEnum.CUSTOMER.name(), RoleEnum.ADMIN.name())
                 .antMatchers("/").permitAll()
+                .antMatchers("customer/activate/").permitAll()
                 // .antMatchers("/registration").permitAll()
-                .anyRequest().authenticated()
+                //.anyRequest().authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

@@ -16,6 +16,11 @@ import java.util.List;
 @SuperBuilder
 @Getter
 public class CustomerDto extends UserDto {
+    private String email;
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private String password;
     private String contact;
     private List<AddressDto> address;
 }

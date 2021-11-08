@@ -10,29 +10,29 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/registration")
 public class UserController {
-    @Autowired
-    private UserService userService;
-
-    @PostMapping("/createAccount")
-    public String save(@Valid @RequestBody UserDto userDto) {
-        if (userService.save(userDto, null) == null) {
-            return "Fail";
-        }
-        return "success";
-    }
-
-    @DeleteMapping("/deleteAccount")
-    public String delete(@RequestParam Long id) {
-        userService.delete(id);
-        return "success";
-
-    }
-
-    @PutMapping("/updateAccount")
-    public String update(@Valid @RequestBody UserDto userDto) {
-        userService.save(userDto, null);
-        return "success";
-    }
+//    @Autowired
+//    private UserService userService;
+//
+//    @PostMapping("/createAccount")
+//    public String save(@Valid @RequestBody UserDto userDto) {
+//        if (userService.save(userDto, null) == null) {
+//            return "Fail";
+//        }
+//        return "success";
+//    }
+//
+//    @DeleteMapping("/deleteAccount")
+//    public String delete(@RequestParam Long id) {
+//        userService.delete(id);
+//        return "success";
+//
+//    }
+//
+//    @PutMapping("/updateAccount")
+//    public String update(@Valid @RequestBody UserDto userDto) {
+//        userService.save(userDto, null);
+//        return "success";
+//    }
 
 
 }
