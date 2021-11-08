@@ -7,6 +7,7 @@ import com.bootcampproject.bootcamp_project.repository.UserRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,8 +20,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    //    @Autowired
-//    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Transactional
     public boolean isUserByEmailExists(String email) {
         return userRepository.countByEmail(email) > 0;
@@ -35,10 +37,12 @@ public class UserService {
                 .firstName(userDto.getFirstName())
                 .middleName(userDto.getMiddleName())
                 .lastName(userDto.getLastName())
-                .password(userDto.getPassword())
-                //  .password(passwordEncoder.encode(userDto.getPassword()))
+                //.password(userDto.getPassword())
+                .password(passwordEncoder.encode(userDto.getPassword()))
                 .roles(Collections.singletonList(role))
                 .build();
+        user.setIsActive(true);
+
         return userRepository.save(user);
     }
 

@@ -57,7 +57,7 @@ public class User extends AuditEntity {
     @OneToMany
     List<Address> addresses;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "userId",referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "roleID",referencedColumnName = "id"))
