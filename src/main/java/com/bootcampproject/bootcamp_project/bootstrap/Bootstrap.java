@@ -32,7 +32,7 @@ public class Bootstrap implements ApplicationRunner {
         log.info(">>>>>>Save boostrap data>>>>");
         String adminEmail = "admin@tothenew.com";
         String customerEmail = "shweta.goel@tothenew.com";
-        String sellerEmail = "seller@tothenew.com";
+        String sellerEmail = "projectfirst96@gmail.com";
         Role roleAdmin = null;
         Role roleSeller = null;
         Role roleCustomer = null;

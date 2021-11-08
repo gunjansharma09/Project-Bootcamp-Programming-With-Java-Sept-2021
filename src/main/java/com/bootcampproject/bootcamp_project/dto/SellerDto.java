@@ -14,7 +14,8 @@ public class SellerDto extends UserDto {
     private String middleName;
     private String lastName;
     private String password;
-    private String gst="123";
+    private String confirmPassword;
+    private String gst = "123";
     private String companyContact;
     private String companyName;
     private AddressDto address;

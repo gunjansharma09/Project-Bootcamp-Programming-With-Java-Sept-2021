@@ -21,6 +21,7 @@ public class CustomerDto extends UserDto {
     private String middleName;
     private String lastName;
     private String password;
+    private String confirmPassword;
     private String contact;
     private List<AddressDto> address;
 }
