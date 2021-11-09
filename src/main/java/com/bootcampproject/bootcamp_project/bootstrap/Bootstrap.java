@@ -51,6 +51,7 @@ public class Bootstrap implements ApplicationRunner {
             userDto.setFirstName("Admin");
             userDto.setLastName("Admin");
             userDto.setPassword("admin");
+            userDto.setActive(true);
             userService.saveAdmin(userDto);
         }
 

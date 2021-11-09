@@ -9,12 +9,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Getter
 public class SellerDto extends UserDto {
-    private String email;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String password;
-    private String confirmPassword;
+//    private String email;
+//    private String firstName;
+//    private String middleName;
+//    private String lastName;
+//    private String password;
+//    private String confirmPassword;
     private String gst = "123";
     private String companyContact;
     private String companyName;

@@ -38,7 +38,6 @@ public class UserService implements UserServiceInterface {
     @Autowired
     private CustomerRepository customerRepository;
 
-
     public UserService() {
         this.executorService = Executors.newSingleThreadExecutor();
     }
@@ -53,16 +52,20 @@ public class UserService implements UserServiceInterface {
         userRepository.deleteById(id);
     }
 
+    private User create(UserDto userDto) {
+        User user = new User();
+        user.setEmail(userDto.getEmail());
+        user.setFirstName(userDto.getFirstName());
+        user.setMiddleName(userDto.getMiddleName());
+        user.setLastName(userDto.getLastName());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        return user;
+    }
+
     @Transactional
     @Override
     public Boolean saveCustomer(CustomerDto customerDto) {
-
-        User user = new User();
-        user.setEmail(customerDto.getEmail());
-        user.setFirstName(customerDto.getFirstName());
-        user.setMiddleName(customerDto.getMiddleName());
-        user.setLastName(customerDto.getLastName());
-        user.setPassword(customerDto.getPassword());
+        User user = create(customerDto);
 
         Customer customer = new Customer();
         customer.setContact(customerDto.getContact());
@@ -71,15 +74,18 @@ public class UserService implements UserServiceInterface {
         user.setCustomer(customer);
 
         List<Address> addresses = new ArrayList<Address>();
-        for (AddressDto addressDto : customerDto.getAddress()) {
-            Address address = new Address();
-            address.setZipCode(addressDto.getZipCode());
-            address.setAddressLine(addressDto.getAddressLine());
-            address.setCity(addressDto.getCity());
-            address.setCountry(addressDto.getCountry());
-            address.setState(addressDto.getState());
-            addresses.add(address);
+        if (customerDto.getAddress() != null) {
+            for (AddressDto addressDto : customerDto.getAddress()) {
+                Address address = new Address();
+                address.setZipCode(addressDto.getZipCode());
+                address.setAddressLine(addressDto.getAddressLine());
+                address.setCity(addressDto.getCity());
+                address.setCountry(addressDto.getCountry());
+                address.setState(addressDto.getState());
+                addresses.add(address);
+            }
         }
+
         user.setAddresses(addresses);
 
         Role role = roleRepository.findByAuthority(RoleEnum.CUSTOMER.name());
@@ -87,6 +93,7 @@ public class UserService implements UserServiceInterface {
         roles.add(role);
         user.setRoles(roles);
 
+        //generating random token and set that token and current time in user.sending user's email id and token.
         UUID token = UUID.randomUUID();
         user.getCustomer().setToken(token.toString());
         user.getCustomer().setTokenGenerated(System.currentTimeMillis());
@@ -105,12 +112,7 @@ public class UserService implements UserServiceInterface {
     @Transactional
     @Override
     public Boolean saveSeller(SellerDto sellerDto) {
-        User user = new User();
-        user.setEmail(sellerDto.getEmail());
-        user.setFirstName(sellerDto.getFirstName());
-        user.setMiddleName(sellerDto.getMiddleName());
-        user.setLastName(sellerDto.getLastName());
-        user.setPassword(sellerDto.getPassword());
+        User user = create(sellerDto);
 
         Seller seller = new Seller();
         seller.setCompanyContact(sellerDto.getCompanyContact());
@@ -140,18 +142,14 @@ public class UserService implements UserServiceInterface {
         return true;
     }
 
+
     private void sendEmail(String email) {
         emailService.sendSimpleMessage(email, "Welcome to online shopping site", "Hi,\\nWaiting for approval");
     }
 
     public Boolean saveAdmin(UserDto userDto) {
-        User user = new User();
-        user.setEmail(userDto.getEmail());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setPassword(userDto.getPassword());
-
-
+        User user = create(userDto);
+        user.setIsActive(userDto.isActive());
         Role role = roleRepository.findByAuthority(RoleEnum.ADMIN.name());
         List<Role> roles = new ArrayList<Role>();
         roles.add(role);
