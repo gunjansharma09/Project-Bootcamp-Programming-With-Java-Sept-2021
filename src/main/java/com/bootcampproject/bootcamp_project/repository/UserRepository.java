@@ -19,10 +19,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
     public Optional<User> findByForgotPasswordToken(String forgotPasswordToken);
 
-//    public List<Seller> findAllSellers();
-//
-//    public List<Customer> findAllCustomer();
-
 
 
 

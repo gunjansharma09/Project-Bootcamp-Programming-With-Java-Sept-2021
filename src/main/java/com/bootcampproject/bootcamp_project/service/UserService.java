@@ -69,7 +69,7 @@ public class UserService implements UserServiceInterface {
 
         Customer customer = new Customer();
         customer.setContact(customerDto.getContact());
-        customer.setUser(user);// kyonki cuctomer me mapping ki h.. isily customerme user set kraenge.. agar mapping user me ki hoti to
+        customer.setUser(user);// kyonki customer me mapping ki h.. isily customer me user set kraenge.. agar mapping user me ki hoti to
         // customer me user set krane ki zarurt nahi hoti.
         user.setCustomer(customer);
 
