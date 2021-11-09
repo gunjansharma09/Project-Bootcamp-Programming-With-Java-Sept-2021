@@ -17,22 +17,13 @@ public class SellerService  {
     @Autowired
     private SellerRepository sellerRepository;
 
-    @Transactional
-    public Seller save(SellerDto sellerDto) {
-        Seller seller = Seller.builder()
-                .gst(sellerDto.getGst())
-                .companyContact((sellerDto.getCompanyContact()))
-                .companyName(sellerDto.getCompanyName())
-                .build();
-        return sellerRepository.save(seller);
-    }
-
-    @Transactional
-    public String deleteById(Long id) {
-        {
-            sellerRepository.deleteById(id);
-            return "success";
-        }
-    }
-
+//    @Transactional
+//    public Seller save(SellerDto sellerDto) {
+//        Seller seller = Seller.builder()
+//                .gst(sellerDto.getGst())
+//                .companyContact((sellerDto.getCompanyContact()))
+//                .companyName(sellerDto.getCompanyName())
+//                .build();
+//        return sellerRepository.save(seller);
+//    }
 }

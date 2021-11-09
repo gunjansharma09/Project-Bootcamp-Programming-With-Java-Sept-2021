@@ -20,26 +20,21 @@ public class SellerController {
     private UserService userService;
 
 
-    @PostMapping("/create")
-    public String save(@Valid @RequestBody SellerDto sellerDto) {
-        if (sellerService.save(sellerDto) == null)
-            return "fail";
-        else return "success";
-    }
+//    @PostMapping("/create")
+//    public String save(@Valid @RequestBody SellerDto sellerDto) {
+//        if (sellerService.save(sellerDto) == null)
+//            return "fail";
+//        else return "success";
+//    }
+//
+//    @PutMapping("/update")
+//    public String update(@Valid @RequestBody SellerDto sellerDto) {
+//        sellerService.save(sellerDto);
+//        return "success";
+//    }
 
-    @DeleteMapping("/delete")
-    public void deleteSeller(@RequestParam Long id) {
-        sellerService.deleteById(id);
-    }
-
-    @PutMapping("/update")
-    public String update(@Valid @RequestBody SellerDto sellerDto) {
-        sellerService.save(sellerDto);
-        return "success";
-    }
-
-    @GetMapping("/read")
-    public String read() {
+    @GetMapping("/read/{token}")
+    public String read(@RequestParam String token) {
         return "Hello seller";
     }
 
