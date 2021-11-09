@@ -14,11 +14,11 @@ public class CustomerController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/save")
+    @PostMapping("/register")
     public String save(@Valid @RequestBody CustomerDto customerDto) {
         if (userService.saveCustomer(customerDto))
-            return "fail";
-        else return "success";
+            return "success";
+        else return "fail";
     }
 
 //    @DeleteMapping("/delete")

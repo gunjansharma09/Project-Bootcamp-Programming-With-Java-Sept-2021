@@ -23,7 +23,8 @@ public class User extends AuditEntity {
 
     @Column(unique = true)
     @NotNull
-    @Email(regexp = ".+@.+\\..+")
+    @Email
+    //(regexp = ".+@.+\\..+")
     // @Pattern(regexp="[A-Za-z0-9._%-+]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}")
     private String email;
 
@@ -39,7 +40,7 @@ public class User extends AuditEntity {
 
 
     @NotNull
-    @NotBlank(message = "New password is mandatory")
+    @NotBlank(message = "password is mandatory")
     private String password;
     private Boolean isDeleted;
 

@@ -24,8 +24,6 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
-    //@Autowired
-    // DataSource dataSource;
     @Autowired
     UserDetailsService userDetailsService;
 
@@ -40,13 +38,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/").anonymous()
                 .antMatchers("/admin/home").hasAnyRole(RoleEnum.ADMIN.name())
-                //.antMatchers("/user/home").hasAnyRole("USER")
                 .antMatchers("/seller").hasAnyRole(RoleEnum.SELLER.name(), RoleEnum.ADMIN.name())
                 .antMatchers("/customer").hasAnyRole(RoleEnum.CUSTOMER.name(), RoleEnum.ADMIN.name())
                 .antMatchers("/").permitAll()
                 .antMatchers("customer/activate/").permitAll()
-                // .antMatchers("/registration").permitAll()
-                //.anyRequest().authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
@@ -70,7 +65,6 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
         return authenticationProvider;
     }
-
 
 }
 

@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/registration")
-public class UserController {
+public class RegistrationController {
     @Autowired
     private UserService userService;
 
