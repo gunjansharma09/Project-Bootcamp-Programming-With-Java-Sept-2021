@@ -88,7 +88,7 @@ public class UserService implements UserServiceInterface {
 
         user.setAddresses(addresses);
 
-        Role role = roleRepository.findByAuthority(RoleEnum.CUSTOMER.name());
+        Role role = roleRepository.findByAuthority(RoleEnum.ROLE_CUSTOMER.name());
         List<Role> roles = new ArrayList<>();
         roles.add(role);
         user.setRoles(roles);
@@ -133,7 +133,7 @@ public class UserService implements UserServiceInterface {
         }
         user.setAddresses(addresses);
 
-        Role role = roleRepository.findByAuthority(RoleEnum.SELLER.name());
+        Role role = roleRepository.findByAuthority(RoleEnum.ROLE_SELLER.name());
         List<Role> roles = new ArrayList<Role>();
         roles.add(role);
         user.setRoles(roles);
@@ -150,7 +150,7 @@ public class UserService implements UserServiceInterface {
     public Boolean saveAdmin(UserDto userDto) {
         User user = create(userDto);
         user.setIsActive(userDto.isActive());
-        Role role = roleRepository.findByAuthority(RoleEnum.ADMIN.name());
+        Role role = roleRepository.findByAuthority(RoleEnum.ROLE_ADMIN.name());
         List<Role> roles = new ArrayList<Role>();
         roles.add(role);
         user.setRoles(roles);

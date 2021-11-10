@@ -86,7 +86,7 @@ public class AdminService {
         if (!customerOptional.isPresent()) {
             return "No customer exists with this user id!";
         }
-        Customer customer=customerOptional.get();
+        Customer customer = customerOptional.get();
 
 
         // Condition to check if user is deactivated
@@ -100,11 +100,11 @@ public class AdminService {
     }
 
     public String deactivateCustomerAccountByAdmin(Long id) {
-        Optional<Customer> customerOptional=customerRepository.findById(id);
+        Optional<Customer> customerOptional = customerRepository.findById(id);
         if (!customerOptional.isPresent()) {
             return "No customer exists with this user id!";
         }
-        Customer customer=customerOptional.get();
+        Customer customer = customerOptional.get();
 
 
         if (customer.getUser().getIsActive()) {
@@ -121,16 +121,17 @@ public class AdminService {
 
     //Seller active and deactivation methods start
 
+    @Transactional
     public String activateSellerAccountByAdmin(Long id) {
-       Optional< Seller > sellerOptional=sellerRepository.findById(id);
+        Optional<Seller> sellerOptional = sellerRepository.findById(id);
 
         if (!sellerOptional.isPresent()) {
             return "No seller exists with this user id!";
         }
-        Seller seller=sellerOptional.get();
+        Seller seller = sellerOptional.get();
 
         // Condition to check if user is deactivated
-        if (!seller.getUser().getIsActive()) {
+        if (seller.getUser().getIsActive() == null || seller.getUser().getIsActive() == false) {
             seller.getUser().setIsActive(true);
             sellerRepository.save(seller);
             sendEmail(seller.getUser().getEmail(), "Congratulations! Your account has been activated!");
@@ -140,11 +141,11 @@ public class AdminService {
     }
 
     public String deactivateSellerAccountByAdmin(Long id) {
-        Optional<Seller> sellerOptional=sellerRepository.findById(id);
+        Optional<Seller> sellerOptional = sellerRepository.findById(id);
         if (!sellerOptional.isPresent()) {
             return "No seller exists with this user id!";
         }
-        Seller seller=sellerOptional.get();
+        Seller seller = sellerOptional.get();
 
         if (seller.getUser().getIsActive()) {
             seller.getUser().setIsActive(false);

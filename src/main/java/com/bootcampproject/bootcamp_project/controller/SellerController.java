@@ -1,14 +1,22 @@
 package com.bootcampproject.bootcamp_project.controller;
 
-import com.bootcampproject.bootcamp_project.dto.CustomerDto;
-import com.bootcampproject.bootcamp_project.dto.SellerDto;
+import com.bootcampproject.bootcamp_project.dto.*;
 import com.bootcampproject.bootcamp_project.entity.Seller;
 import com.bootcampproject.bootcamp_project.service.SellerService;
 import com.bootcampproject.bootcamp_project.service.UserService;
+import com.bootcampproject.bootcamp_project.utility.SecurityContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/seller")
@@ -19,24 +27,41 @@ public class SellerController {
     @Autowired
     private UserService userService;
 
-
-//    @PostMapping("/create")
-//    public String save(@Valid @RequestBody SellerDto sellerDto) {
-//        if (sellerService.save(sellerDto) == null)
-//            return "fail";
-//        else return "success";
-//    }
-//
-//    @PutMapping("/update")
-//    public String update(@Valid @RequestBody SellerDto sellerDto) {
-//        sellerService.save(sellerDto);
-//        return "success";
-//    }
-
-    @GetMapping("/read/{token}")
-    public String read(@RequestParam String token) {
-        return "Hello seller";
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/view/profile")
+    public SellerProfileDto viewProfile() {
+        String email = SecurityContextUtil.findAuthenticatedUser();
+        System.out.println(email);
+        return sellerService.viewProfile(email);
     }
 
+    @PutMapping("/update/profile")
+    public String updateProfile(@RequestBody SellerDto sellerDto) {
+        String email = SecurityContextUtil.findAuthenticatedUser();
+        System.out.println(email);
+        return sellerService.update(sellerDto, email);
+    }
 
+    @PutMapping("/update/password")
+    public String updatePassword(@RequestHeader @NotNull String password, @RequestHeader @NotNull String confirmPassword) {
+        String email = SecurityContextUtil.findAuthenticatedUser();
+        System.out.println(email);
+        return sellerService.updatePassword(email, password, confirmPassword);
+    }
+
+    /*@PutMapping("/update/password")
+    public String updatePassword(@RequestBody SetPasswordDTO setPasswordDTO) {
+        String email = SecurityContextUtil.findAuthenticatedUser();
+        System.out.println(email);
+        return sellerService.updatePassword(sellerDto, email);
+    }*/
+
+    @PutMapping("/update/address")
+    public String updateAddress(@RequestBody AddressDto addressDto)
+    {
+        String email = SecurityContextUtil.findAuthenticatedUser();
+        System.out.println(email);
+        return sellerService.updateAddress(addressDto,email);
+    }
 }
+
