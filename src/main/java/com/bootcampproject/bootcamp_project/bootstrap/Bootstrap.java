@@ -36,14 +36,14 @@ public class Bootstrap implements ApplicationRunner {
         Role roleAdmin = null;
         Role roleSeller = null;
         Role roleCustomer = null;
-        if (!roleService.isRoleExists(RoleEnum.ADMIN.name())) {
-            roleAdmin = roleService.saveRole(RoleEnum.ADMIN.name());
+        if (!roleService.isRoleExists(RoleEnum.ROLE_ADMIN.name())) {
+            roleAdmin = roleService.saveRole(RoleEnum.ROLE_ADMIN.name());
         }
-        if (!roleService.isRoleExists(RoleEnum.SELLER.name())) {
-            roleSeller = roleService.saveRole(RoleEnum.SELLER.name());
+        if (!roleService.isRoleExists(RoleEnum.ROLE_SELLER.name())) {
+            roleSeller = roleService.saveRole(RoleEnum.ROLE_SELLER.name());
         }
-        if (!roleService.isRoleExists(RoleEnum.CUSTOMER.name())) {
-            roleCustomer = roleService.saveRole(RoleEnum.CUSTOMER.name());
+        if (!roleService.isRoleExists(RoleEnum.ROLE_CUSTOMER.name())) {
+            roleCustomer = roleService.saveRole(RoleEnum.ROLE_CUSTOMER.name());
         }
         if (!userService.isUserByEmailExists(adminEmail)) {
             UserDto userDto = new UserDto();

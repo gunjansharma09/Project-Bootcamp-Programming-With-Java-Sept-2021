@@ -10,14 +10,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-
-import javax.sql.DataSource;
 
 @Configuration
 @EnableResourceServer
@@ -37,9 +34,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/").anonymous()
-                .antMatchers("/admin/home").hasAnyRole(RoleEnum.ADMIN.name())
-                .antMatchers("/seller").hasAnyRole(RoleEnum.SELLER.name(), RoleEnum.ADMIN.name())
-                .antMatchers("/customer").hasAnyRole(RoleEnum.CUSTOMER.name(), RoleEnum.ADMIN.name())
+                .antMatchers("/admin/home").hasAnyRole(RoleEnum.ROLE_ADMIN.name())
+                .antMatchers("/seller").hasAnyRole(RoleEnum.ROLE_SELLER.name(), RoleEnum.ROLE_ADMIN.name())
+                .antMatchers("/customer").hasAnyRole(RoleEnum.ROLE_CUSTOMER.name(), RoleEnum.ROLE_ADMIN.name())
                 .antMatchers("/").permitAll()
                 .antMatchers("customer/activate/").permitAll()
                 .and()

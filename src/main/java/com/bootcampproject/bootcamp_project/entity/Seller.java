@@ -22,8 +22,6 @@ public class Seller extends AuditEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")   //same name as id @Column
     private User user;
-    @Column(unique = true)
-    @NonNull
     private String gst;
     private String companyContact;
     private String companyName;
