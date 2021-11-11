@@ -4,8 +4,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class SecurityContextUtil {
-
-    // security context se nikal k laega k ye kon sa user h. problem->secure kyo ni ho ri h?
+    // Security context holds details of current user.
     public static String findAuthenticatedUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

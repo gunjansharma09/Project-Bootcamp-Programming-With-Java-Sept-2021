@@ -26,7 +26,7 @@ public class SellerController {
 
     @Autowired
     private UserService userService;
-
+//--------------------------------to view profile-----------------------------------------------------------------------------------------
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/view/profile")
     public SellerProfileDto viewProfile() {
@@ -34,14 +34,14 @@ public class SellerController {
         System.out.println(email);
         return sellerService.viewProfile(email);
     }
-
+//-------------------------------to update profile----------------------------------------------------------------------------------------
     @PutMapping("/update/profile")
     public String updateProfile(@RequestBody SellerDto sellerDto) {
         String email = SecurityContextUtil.findAuthenticatedUser();
         System.out.println(email);
         return sellerService.update(sellerDto, email);
     }
-
+//----------------------------to update password------------------------------------------------------------------------------------------
     @PutMapping("/update/password")
     public String updatePassword(@RequestHeader @NotNull String password, @RequestHeader @NotNull String confirmPassword) {
         String email = SecurityContextUtil.findAuthenticatedUser();
@@ -55,7 +55,7 @@ public class SellerController {
         System.out.println(email);
         return sellerService.updatePassword(sellerDto, email);
     }*/
-
+//---------------------------------to update address--------------------------------------------------------------------------------------
     @PutMapping("/update/address")
     public String updateAddress(@RequestBody AddressDto addressDto)
     {

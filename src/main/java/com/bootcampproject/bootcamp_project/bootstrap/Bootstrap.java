@@ -6,7 +6,9 @@ import com.bootcampproject.bootcamp_project.dto.SellerDto;
 import com.bootcampproject.bootcamp_project.dto.UserDto;
 import com.bootcampproject.bootcamp_project.entity.Role;
 import com.bootcampproject.bootcamp_project.enums.RoleEnum;
+import com.bootcampproject.bootcamp_project.service.CustomerService;
 import com.bootcampproject.bootcamp_project.service.RoleService;
+import com.bootcampproject.bootcamp_project.service.SellerService;
 import com.bootcampproject.bootcamp_project.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,8 @@ import java.util.ArrayList;
 public class Bootstrap implements ApplicationRunner {
     private final UserService userService;
     private final RoleService roleService;
+    private final SellerService sellerService;
+    private final CustomerService customerService;
     @Autowired
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -62,7 +66,7 @@ public class Bootstrap implements ApplicationRunner {
             customerDto.setLastName("Customer");
             customerDto.setPassword("customer");
             customerDto.setAddress(new ArrayList<AddressDto>());
-            userService.saveCustomer(customerDto);
+            customerService.saveCustomer(customerDto);
         }
 
         if (!userService.isUserByEmailExists(sellerEmail)) {
@@ -72,35 +76,10 @@ public class Bootstrap implements ApplicationRunner {
             sellerDto.setLastName("Seller");
             sellerDto.setPassword("seller");
             sellerDto.setAddress(new AddressDto());
-            userService.saveSeller(sellerDto);
+            sellerService.saveSeller(sellerDto);
         }
 
 
-//            userService.saveCustomer(CustomerDto.builder()
-//                    .firstName("Admin")
-//                    .lastName("admin")
-//                    .email(adminEmail)
-//                   .password("admin")
-//                    .build(), roleAdmin);
-
-
-//        if (!userService.isUserByEmailExists(customerEmail)) {
-//            userService.save(UserDto.builder()
-//                    .firstName("Customer")
-//                    .lastName("customer")
-//                    .email(customerEmail)
-//                    .password("customer")
-//                    .build(), roleCustomer);
-//        }
-//
-//        if (!userService.isUserByEmailExists(sellerEmail)) {
-//            userService.save(UserDto.builder()
-//                    .firstName("Seller")
-//                    .lastName("seller")
-//                    .email(sellerEmail)
-//                    .password("seller")
-//                    .build(), roleSeller);
-//        }
 
         log.info(">>>>>>Done saving boostrap data>>>>");
 
