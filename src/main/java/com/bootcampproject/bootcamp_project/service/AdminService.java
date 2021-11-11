@@ -33,7 +33,7 @@ public class AdminService {
     private EmailService emailService;
 
 
-    //PAGINATION STARTS
+    //--------------------------------PAGINATION STARTS-------------------------------------------------------------------------------------
     public List<Seller> findListOfSellers(Integer pageSize, Integer pageOffset, String sortBy, String email) {
         if (!Objects.isNull(email)) {
             Optional<User> sellerOption = userRepository.findByEmail(email);
@@ -72,14 +72,14 @@ public class AdminService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Order.asc(sortBy)));
         return customerRepository.findAll(pageable).toList();
     }
-    //PAGINATION ENDS
+    //------------------------------PAGINATION ENDS----------------------------------------------------------------------------------------
 
-    //Email 
+    //------------------------------------------Email--------------------------------------------------------------------------------------
     public void sendEmail(String email, String body) {
-        emailService.sendSimpleMessage(email, "Hi there!", body);
+        emailService.sendEmailAsync(email, "Hi there!", body);
     }
 
-    //Customer active and deactivate methods start
+    //----------------------------------Customer active and deactivate methods start--------------------------------------------------------
     @Transactional
     public String activateCustomerAccountByAdmin(Long id) {
         Optional<Customer> customerOptional = customerRepository.findById(id);
@@ -116,10 +116,10 @@ public class AdminService {
         return "Customer is already deactivated!";
     }
 
-    // Customer active and deactivate methods end
+    //--------------------------------------- Customer active and deactivate methods end------------------------------------------------------
 
 
-    //Seller active and deactivation methods start
+    //---------------------------------------Seller active and deactivation methods start-----------------------------------------------------
 
     @Transactional
     public String activateSellerAccountByAdmin(Long id) {

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    public Customer findByToken(String token);
+    public Customer findByAccountActivateToken(String token);
 
     public Page<Customer> findAll(Pageable pageable);
 

@@ -36,9 +36,9 @@ public class Customer extends AuditEntity implements Serializable {
     @OneToOne(mappedBy = "customerId")
     private Cart cart;
 
-    private String token;
+    private String accountActivateToken;
 
-    private Long tokenGenerated;
+    private Long accountActivateTokenGeneratedAt;
 
 }
 
