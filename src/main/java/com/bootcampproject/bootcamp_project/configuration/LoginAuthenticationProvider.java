@@ -7,12 +7,14 @@ import com.bootcampproject.bootcamp_project.entity.User;
 import com.bootcampproject.bootcamp_project.exceptions.AccountLockedException;
 import com.bootcampproject.bootcamp_project.exceptions.AccountNotActiveException;
 import com.bootcampproject.bootcamp_project.repository.UserRepository;
+import com.bootcampproject.bootcamp_project.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -28,6 +30,9 @@ public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
     private UserRepository userRepository;
     @Autowired
     private MyUserDetailService userDetailService;
+
+    @Autowired
+    private EmailService emailService;
 
     /*
         @Override
@@ -61,10 +66,14 @@ public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
 
                 int temp = user.getInvalidAttemptCount() != null ? user.getInvalidAttemptCount() : 0;
                 user.setInvalidAttemptCount(++temp);
-                if (temp == 3 && (!user.getRoles().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN")))) {
-
+                if (temp == 3 && (user.getRoles().stream().noneMatch(role -> role.getAuthority().equals("ROLE_ADMIN")))) {
+                    //if (temp == 3 && (!user.getRoles().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN")))) {
                     user.setIsLocked(true);
+
+
+                    emailService.sendEmailAsync(user.getEmail(), "Your account has been locked now", "Hi, Your account has been locked due to maximum attempt of login!");
 //TODO : add send e-mail
+
                 } else {
                     user.getRoles().forEach(role -> log.info(role.getAuthority()));
                 }
@@ -79,16 +88,17 @@ public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
         Authentication auth = super.authenticate(authentication);
         return auth;
     }
-/*
-	@Override
-	protected Authentication createSuccessAuthentication(Object principal,
-														 Authentication authentication, UserDetails user) {
-		System.out.println("SUCC>>>");
-		User user1 = userRepository.findByEmail(user.getUsername()).orElse(null);
-		if (user1 != null) {
-			user1.setInvalidAttemptCount(0);
-		}
-		userRepository.save(user1);
-		return super.createSuccessAuthentication(principal, authentication, user);
-	}*/
+
+    @Override
+    protected Authentication createSuccessAuthentication(Object principal,
+                                                         Authentication authentication, UserDetails user) {
+        System.out.println("SUCC>>>");
+        User user1 = userRepository.findByEmail(user.getUsername()).orElse(null);
+        if (user1 != null && user1.getInvalidAttemptCount() < 3) {
+            user1.setInvalidAttemptCount(0);
+            userRepository.save(user1);
+        }
+
+        return super.createSuccessAuthentication(principal, authentication, user);
+    }
 }

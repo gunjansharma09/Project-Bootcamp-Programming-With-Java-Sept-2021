@@ -22,7 +22,7 @@ public class EmailService {
 
     public void sendEmailAsync(String to, String subject, String text) {
         executorService.submit(() -> {
-            sendEmailAsync(to, subject, text);
+            sendEmailInSync(to, subject, text);
         });
     }
 
