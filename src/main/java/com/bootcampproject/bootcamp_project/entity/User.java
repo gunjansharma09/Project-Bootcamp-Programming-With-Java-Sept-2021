@@ -61,6 +61,7 @@ public class User extends AuditEntity {
     private Customer customer;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "userId", referencedColumnName = "id")
     List<Address> addresses;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -68,7 +69,6 @@ public class User extends AuditEntity {
             joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "roleID", referencedColumnName = "id"))
     private List<Role> roles;
-
 
 }
 

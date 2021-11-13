@@ -4,6 +4,7 @@ import com.bootcampproject.bootcamp_project.dto.AddressDto;
 import com.bootcampproject.bootcamp_project.dto.CustomerDto;
 import com.bootcampproject.bootcamp_project.dto.CustomerProfileDto;
 import com.bootcampproject.bootcamp_project.dto.SellerDto;
+import com.bootcampproject.bootcamp_project.entity.Category;
 import com.bootcampproject.bootcamp_project.service.CustomerService;
 import com.bootcampproject.bootcamp_project.service.UserService;
 import com.bootcampproject.bootcamp_project.utility.SecurityContextUtil;
@@ -21,6 +22,7 @@ public class CustomerController {
     private UserService userService;
     @Autowired
     private CustomerService customerService;
+
 
     //--------------------------------------------to view profile-----------------------------------------------------------------------
     @GetMapping("/view/profile")
@@ -74,4 +76,11 @@ public class CustomerController {
     }
 
 
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------CATEGORY-------------------------------------------------------------------------------------------
+
+    @GetMapping("/list/all/category")
+    public List<Category> listAllCategory(Long id) {
+        return customerService.categoryList(id);
+    }
 }

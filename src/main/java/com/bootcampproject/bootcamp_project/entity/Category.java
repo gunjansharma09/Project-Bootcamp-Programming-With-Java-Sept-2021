@@ -4,20 +4,25 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
+
 @Entity
 @Data
 public class Category extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
     private String name;
-    @OneToOne(cascade = CascadeType.ALL)
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "parentCategoryId")
-    private Category category;
+    private Category parentCategory; // database me as a id store hogi.
 
-    @OneToOne(mappedBy = "categoryId")
-    private Product product;
+//    @OneToOne(mappedBy = "categoryId")
+//    private Product product;
 
-    @OneToMany(mappedBy = "categoryId")
+    @OneToMany(mappedBy = "category")
     private List<CategoryMetadataFieldValues> categoryMetadataFieldValues;
+
 }
+

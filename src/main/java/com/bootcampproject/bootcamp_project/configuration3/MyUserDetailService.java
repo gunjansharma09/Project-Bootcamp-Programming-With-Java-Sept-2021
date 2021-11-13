@@ -1,7 +1,8 @@
-package com.bootcampproject.bootcamp_project.service;
+package com.bootcampproject.bootcamp_project.configuration3;
 
 import com.bootcampproject.bootcamp_project.entity.User;
 import com.bootcampproject.bootcamp_project.repository.UserRepository;
+import com.bootcampproject.bootcamp_project.service.MyUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
