@@ -45,7 +45,8 @@ public class SellerService {
 
     @Autowired
     private EmailService emailService;
-//-------------------------------to save seller details--------------------------------------------------------------------------------
+
+    //-------------------------------to save seller details--------------------------------------------------------------------------------
     @Transactional
     public Boolean saveSeller(SellerDto sellerDto) {
         User user = DomainUtils.toUser(sellerDto, passwordEncoder);
@@ -62,6 +63,7 @@ public class SellerService {
 
         List<Role> roles = roleService.createRoles(RoleEnum.ROLE_SELLER);
         user.setRoles(roles);
+        user.setIsActive(sellerDto.isActive());
         userRepository.save(user);
         emailService.sendEmailAsync(user.getEmail(), "Welcome to online shopping site", "Hi,\\nWaiting for approval");
         return true;

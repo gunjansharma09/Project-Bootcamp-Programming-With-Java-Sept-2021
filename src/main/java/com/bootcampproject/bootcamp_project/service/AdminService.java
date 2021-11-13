@@ -1,5 +1,6 @@
 package com.bootcampproject.bootcamp_project.service;
 
+import com.bootcampproject.bootcamp_project.dto.CustomerResponseDTO;
 import com.bootcampproject.bootcamp_project.entity.Customer;
 import com.bootcampproject.bootcamp_project.entity.Seller;
 import com.bootcampproject.bootcamp_project.entity.User;
@@ -11,12 +12,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -54,23 +58,32 @@ public class AdminService {
         return sellerRepository.findAll(pageable).toList();
     }
 
-    public List<Customer> findListOfCustomer(Integer pageSize, Integer pageOffSet, String sortBy, String email) {
+    public List<CustomerResponseDTO> findListOfCustomer(Integer pageSize, Integer pageOffSet, String sortBy, String email) {
         if (!Objects.isNull(email)) {
             Optional<User> customerOption = userRepository.findByEmail(email);
             if (customerOption.isPresent())
-                return Collections.singletonList(customerOption.get().getCustomer());
+                return Collections.singletonList(CustomerResponseDTO.mapper(customerOption.get().getCustomer()));
             return null;
         }
 
         Integer pageNumber = 0;
         if (Objects.isNull(pageSize))
             pageSize = 10;
-        if (Objects.isNull(pageOffSet) && pageOffSet != 0)
+        if (Objects.isNull(pageOffSet)) {
+            pageOffSet = 0;
+        } else {
+            //(Objects.isNull(pageOffSet) && pageOffSet != 0)
             pageNumber = pageOffSet / pageSize;
+        }
+
         if (Objects.isNull(sortBy))
             sortBy = "id";
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Order.asc(sortBy)));
-        return customerRepository.findAll(pageable).toList();
+
+        List<Customer> customers = customerRepository.findAll(pageable).toList();
+        List<CustomerResponseDTO> customerResponseDTOS = customers.stream().map(CustomerResponseDTO::mapper).collect(Collectors.toList());
+
+        return customerResponseDTOS;
     }
     //------------------------------PAGINATION ENDS----------------------------------------------------------------------------------------
 
@@ -81,10 +94,10 @@ public class AdminService {
 
     //----------------------------------Customer active and deactivate methods start--------------------------------------------------------
     @Transactional
-    public String activateCustomerAccountByAdmin(Long id) {
+    public ResponseEntity<?> activateCustomerAccountByAdmin(Long id) {
         Optional<Customer> customerOptional = customerRepository.findById(id);
         if (!customerOptional.isPresent()) {
-            return "No customer exists with this user id!";
+            return new ResponseEntity<>("Customer not found ,", HttpStatus.NOT_FOUND);
         }
         Customer customer = customerOptional.get();
 
@@ -94,9 +107,9 @@ public class AdminService {
             customer.getUser().setIsActive(true);
             customerRepository.save(customer);
             sendEmail(customer.getUser().getEmail(), "Congratulations! Your account has been activated!");
-            return "Customer activated Successfully";
+            return new ResponseEntity<>("Customer activated successfully!", HttpStatus.OK);
         }
-        return "Customer is already activated!";
+        return new ResponseEntity<>("Customer is already activated!", HttpStatus.OK);
     }
 
     public String deactivateCustomerAccountByAdmin(Long id) {

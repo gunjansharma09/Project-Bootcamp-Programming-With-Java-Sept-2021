@@ -1,4 +1,4 @@
-package com.bootcampproject.bootcamp_project.configuration3;
+package com.bootcampproject.bootcamp_project.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,16 +21,16 @@ public class AuthenticationManagerProvider extends WebSecurityConfigurerAdapter 
     }
 
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery(
-                        "select email,password,is_active from user where email=?")
-                .authoritiesByUsernameQuery(
-                        "select email,authority from role r "
-                                + "inner join user_role ur on ur.roleid=r.id inner join user u on u.id=ur.user_id where u.email=?");
-
-    }
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.jdbcAuthentication()
+//                .dataSource(dataSource)
+//                .usersByUsernameQuery(
+//                        "select email,password,is_active from user where email=?")
+//                .authoritiesByUsernameQuery(
+//                        "select email,authority from role r "
+//                                + "inner join user_role ur on ur.roleid=r.id inner join user u on u.id=ur.user_id where u.email=?");
+//
+//    } // direct db se utha ra h is method se
 
 }

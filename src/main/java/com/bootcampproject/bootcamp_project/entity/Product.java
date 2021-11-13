@@ -4,10 +4,11 @@ import com.bootcampproject.bootcamp_project.enums.Status;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 @Entity
 @Data
-public class Product extends AuditEntity{
+public class Product extends AuditEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long productId;

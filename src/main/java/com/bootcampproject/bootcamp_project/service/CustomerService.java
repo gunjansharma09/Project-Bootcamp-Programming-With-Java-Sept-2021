@@ -82,6 +82,7 @@ public class CustomerService {
         UUID token = UUID.randomUUID();
         user.getCustomer().setAccountActivateToken(token.toString());
         user.getCustomer().setAccountActivateTokenGeneratedAt(System.currentTimeMillis());
+        user.setIsActive(customerDto.isActive());
         customerRepository.save(customer);
         sendTokenToCustomer(user.getEmail(), token);
         return true;

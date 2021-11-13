@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class CategoryMetaDataFieldValuesId implements Serializable {
+public class CategoryMetaDataFieldValuesId implements Serializable{
 
   private static final long serialVersionUID = 1l;
 

@@ -1,22 +1,20 @@
 package com.bootcampproject.bootcamp_project.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends AuditEntity {
+public class User extends AuditEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -42,12 +40,12 @@ public class User extends AuditEntity {
     @NotNull
     @NotBlank(message = "password is mandatory")
     private String password;
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
-    private Boolean isActive;
-    private Boolean isExpired;
-    private Boolean isLocked;
-    private Integer invalidAttemptCount;
+    private Boolean isActive = false;
+    private Boolean isExpired = false;
+    private Boolean isLocked = false;
+    private Integer invalidAttemptCount = 0;
 
     private String forgotPasswordToken;
     private Long forgotPasswordGeneratedTokenAt;
@@ -61,7 +59,8 @@ public class User extends AuditEntity {
     private Customer customer;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId", referencedColumnName = "id")
+    @JoinColumn(name = "userId", referencedColumnName = "id") // 1 mapping table bn jati h one to many ya many to many se.. is annotation se vo mapping table ni bnegi
+
     List<Address> addresses;
 
     @ManyToMany(fetch = FetchType.EAGER)

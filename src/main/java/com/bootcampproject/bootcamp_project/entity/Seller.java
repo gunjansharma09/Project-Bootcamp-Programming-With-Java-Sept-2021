@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Seller extends AuditEntity {
+public class Seller extends AuditEntity implements Serializable {
     //	USER_ID
     @Id
     @Column(name = "user_id")
@@ -25,8 +25,6 @@ public class Seller extends AuditEntity {
     private String gst;
     private String companyContact;
     private String companyName;
-
-
 
 
 }

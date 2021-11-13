@@ -1,4 +1,4 @@
-package com.bootcampproject.bootcamp_project.service;
+package com.bootcampproject.bootcamp_project.configuration;
 
 import com.bootcampproject.bootcamp_project.entity.User;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class MyUserDetails implements UserDetails {
     public MyUserDetails(User user) {
         this.userName = user.getEmail();
         this.password = user.getPassword();
-        active = true;
+        this.active = user.getIsActive();
         this.authorities = user.getRoles().stream().map(role -> role.getAuthority())
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());

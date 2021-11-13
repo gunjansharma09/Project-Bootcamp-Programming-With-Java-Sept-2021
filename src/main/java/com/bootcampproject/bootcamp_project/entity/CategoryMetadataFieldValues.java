@@ -3,12 +3,13 @@ package com.bootcampproject.bootcamp_project.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Data
 @IdClass(CategoryMetaDataFieldValuesId.class)
-public class CategoryMetadataFieldValues extends AuditEntity {
+public class CategoryMetadataFieldValues extends AuditEntity implements Serializable {
 
     @Id
     @ManyToOne

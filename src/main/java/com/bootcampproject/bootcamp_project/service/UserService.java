@@ -110,6 +110,10 @@ public class UserService {
         return "Your password is successfully created!";
         //Case 3 completed
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
 }
 
 
