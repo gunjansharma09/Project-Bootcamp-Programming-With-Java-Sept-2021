@@ -7,24 +7,24 @@ import java.util.List;
 
 @Entity
 @Data
+@IdClass(CategoryMetaDataFieldValuesId.class)
 public class CategoryMetadataFieldValues extends AuditEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @ManyToOne
+    @JoinColumn(name = "CategoryMetaDataFieldId")
+    private CategoryMetaDataField categoryMetaDataField;
+
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "CategoryId")
+    private Category category;
+
     private String value;
 
-//    @ManyToMany
-//    @JoinColumn(name = "categoryMetaDataFieldId")
-//    private CategoryMetaDataField categoryMetaDataFieldId;
-
-    @ManyToOne
-    @JoinColumn(name = "categoryId")
-    private Category categoryId;
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "catMetaDataField_catMetaDataFieldValues",
-            joinColumns = @JoinColumn(name = "categoryMetadataFieldValues_id"),
-            inverseJoinColumns = @JoinColumn(name = "categoryMetaDataField_id",referencedColumnName = "id"))
-    private List<CategoryMetaDataField> categoryMetaDataFields;
 }
+
+
+
+
+

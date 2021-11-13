@@ -3,22 +3,19 @@ package com.bootcampproject.bootcamp_project.service;
 import com.bootcampproject.bootcamp_project.dto.AddressDto;
 import com.bootcampproject.bootcamp_project.dto.CustomerDto;
 import com.bootcampproject.bootcamp_project.dto.CustomerProfileDto;
-import com.bootcampproject.bootcamp_project.entity.Address;
-import com.bootcampproject.bootcamp_project.entity.Customer;
-import com.bootcampproject.bootcamp_project.entity.Role;
-import com.bootcampproject.bootcamp_project.entity.User;
+import com.bootcampproject.bootcamp_project.entity.*;
 import com.bootcampproject.bootcamp_project.enums.RoleEnum;
+import com.bootcampproject.bootcamp_project.exceptions.CategoryNotFoundException;
 import com.bootcampproject.bootcamp_project.exceptions.PasswordNotMatchedException;
 import com.bootcampproject.bootcamp_project.exceptions.UserNotFoundException;
-import com.bootcampproject.bootcamp_project.repository.AddressRepository;
-import com.bootcampproject.bootcamp_project.repository.CustomerRepository;
-import com.bootcampproject.bootcamp_project.repository.RoleRepository;
-import com.bootcampproject.bootcamp_project.repository.UserRepository;
+import com.bootcampproject.bootcamp_project.repository.*;
 import com.bootcampproject.bootcamp_project.utility.DomainUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +42,8 @@ public class CustomerService {
     private EmailService emailService;
     @Autowired
     private AddressRepository addressRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     //--------------------------------------------To save a customer ----------------------------------------------------------
     @Transactional
@@ -302,5 +301,30 @@ public class CustomerService {
         return "User's address has been deleted successfully!";
 
     }
+
+    //------------------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------CATEGORY------------------------------------------------------------------------
+
+    //Return List all root level categories if no ID is passed,else list of all immediate child nodes of passed category ID
+    public List<Category> categoryList(Long id) {
+        boolean exists;
+
+        if (id != null) {
+            exists = categoryRepository.existsById(id);
+
+            if (exists) {
+                List<Category> category = categoryRepository.findByParentCategory(id);
+            } else {
+                throw new CategoryNotFoundException("Invalid category Id");
+            }
+        } else {
+            List<Category> category = categoryRepository.findByCategoryIsNull();
+        }
+        return null;
+    }
+
+    //
+
+
 }
 
