@@ -54,7 +54,7 @@ public class Bootstrap implements ApplicationRunner {
             userDto.setEmail(adminEmail);
             userDto.setFirstName("Admin");
             userDto.setLastName("Admin");
-            userDto.setPassword("admin");
+            userDto.setPassword("Admin@12");
             userDto.setActive(true);
             userService.saveAdmin(userDto);
         }
@@ -64,7 +64,7 @@ public class Bootstrap implements ApplicationRunner {
             customerDto.setEmail(customerEmail);
             customerDto.setFirstName("Customer");
             customerDto.setLastName("Customer");
-            customerDto.setPassword("customer");
+            customerDto.setPassword("Customer@12");
             customerDto.setActive(false);
             customerDto.setAddress(new ArrayList<AddressDto>());
             customerService.saveCustomer(customerDto);
@@ -75,7 +75,7 @@ public class Bootstrap implements ApplicationRunner {
             sellerDto.setEmail(sellerEmail);
             sellerDto.setFirstName("Seller");
             sellerDto.setLastName("Seller");
-            sellerDto.setPassword("seller");
+            sellerDto.setPassword("Seller@12");
             sellerDto.setActive(false);
             sellerDto.setAddress(new AddressDto());
             sellerService.saveSeller(sellerDto);

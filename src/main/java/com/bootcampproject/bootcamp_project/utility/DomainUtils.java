@@ -6,6 +6,8 @@ import com.bootcampproject.bootcamp_project.dto.UserDto;
 import com.bootcampproject.bootcamp_project.entity.Address;
 import com.bootcampproject.bootcamp_project.entity.Seller;
 import com.bootcampproject.bootcamp_project.entity.User;
+import com.bootcampproject.bootcamp_project.exceptions.InvalidPasswordException;
+import com.bootcampproject.bootcamp_project.validator.Validator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class DomainUtils {
@@ -17,6 +19,10 @@ public class DomainUtils {
         user.setFirstName(userDto.getFirstName());
         user.setMiddleName(userDto.getMiddleName());
         user.setLastName(userDto.getLastName());
+        user.setCreatedBy(getCreatedBy());
+        if (!Validator.isValidatedPassword(userDto.getPassword())) {
+            throw new InvalidPasswordException("Password should contains 8-15 Characters with atleast 1 Lower case, 1 Upper case, 1 Special Character, 1 Number");
+        }
         if (passwordEncoder != null)
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         else
@@ -32,6 +38,7 @@ public class DomainUtils {
         address.setCity(addressDto.getCity());
         address.setCountry(addressDto.getCountry());
         address.setState(addressDto.getState());
+        address.setCreatedBy(getCreatedBy());
         return address;
     }
 
@@ -41,6 +48,15 @@ public class DomainUtils {
         seller.setCompanyContact(sellerDto.getCompanyContact());
         seller.setCompanyName(sellerDto.getCompanyName());
         seller.setGst(sellerDto.getGst());
+        seller.setCreatedBy(getCreatedBy());
         return seller;
     }
+
+    public static String getCreatedBy() {
+        String createdBy = SecurityContextUtil.findAuthenticatedUser();
+        createdBy = (createdBy == null) ? "system" : createdBy; // bootstrap jb chalta h to vo application run hone k baad chalta h.. usme koi b user loggedin ni hota..
+
+        return createdBy;
+    }
+
 }

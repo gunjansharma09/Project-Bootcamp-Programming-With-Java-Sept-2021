@@ -4,11 +4,15 @@ import com.bootcampproject.bootcamp_project.dto.UserDto;
 import com.bootcampproject.bootcamp_project.entity.Role;
 import com.bootcampproject.bootcamp_project.entity.User;
 import com.bootcampproject.bootcamp_project.enums.RoleEnum;
+import com.bootcampproject.bootcamp_project.exceptions.InvalidTokenException;
+import com.bootcampproject.bootcamp_project.exceptions.UserNotFoundException;
 import com.bootcampproject.bootcamp_project.repository.CustomerRepository;
 import com.bootcampproject.bootcamp_project.repository.RoleRepository;
 import com.bootcampproject.bootcamp_project.repository.UserRepository;
 import com.bootcampproject.bootcamp_project.utility.DomainUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +43,7 @@ public class UserService {
         return userRepository.countByEmail(email) > 0;
     }
 
+    //--------------------------------to save admin-------------------------------------------------------------------------------
     public Boolean saveAdmin(UserDto userDto) {
         User user = DomainUtils.toUser(userDto, passwordEncoder);
         user.setIsActive(userDto.isActive());
@@ -50,22 +55,18 @@ public class UserService {
         return true;
     }
 
-
+    //------------------ to send token via email to user ----------------------------------------------------------------------------------------
     private void sendTokenViaEmailToUser(String email, UUID uuid) {
         String url = "http://localhost:8080/set/password/" + uuid.toString();
         emailService.sendEmailAsync(email, "Welcome to online shopping site", "Hi,\nUse link mentioned below to restore your password\n" + url);
     }
 
+    //-----------------------------------------------to forgot password via email----------------------------------------------------------------------
     public String forgotPassword(String email) {
-        if (Objects.isNull(email))
-            return "No email provided";
-
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (!userOptional.isPresent())
-            return "Invalid email address";
-
+            throw new UserNotFoundException("User not found with email " + email);
         User user = userOptional.get();
-
         if (user.getForgotPasswordToken() == null) {
             sendToken(user);
             return "Password restore link has been sent over email!";
@@ -75,6 +76,8 @@ public class UserService {
         }
     }
 
+    //-----------------------------------------to send token----------------------------------------------------------------------------------
+
     private void sendToken(User user) {
         UUID uuid = UUID.randomUUID();
         user.setForgotPasswordToken(uuid.toString());
@@ -83,12 +86,12 @@ public class UserService {
         sendTokenViaEmailToUser(user.getEmail(), uuid);
     }
 
-
+    // -------------------------------to update password----------------------------------------------------------------------------------------
     public String updatePassword(String token, String newPassword) {
         //Case 1: Invalid token
         Optional<User> userOptional = userRepository.findByForgotPasswordToken(token);
         if (!userOptional.isPresent())
-            return "Invalid token!";
+            throw new InvalidTokenException("Invalid token!");
 
         //Case 1 completed
 
@@ -96,7 +99,7 @@ public class UserService {
 
         //Case 2: Expired token
 
-        if (user.getForgotPasswordGeneratedTokenAt() < System.currentTimeMillis() - (1 * 60 * 1000)) {
+        if (user.getForgotPasswordGeneratedTokenAt() < System.currentTimeMillis() - (15 * 60 * 1000)) {
             sendToken(user);
             return "Your token has expired. A new token has been shared over email.";
         }

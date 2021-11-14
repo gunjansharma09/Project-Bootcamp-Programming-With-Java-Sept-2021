@@ -7,6 +7,7 @@ import com.bootcampproject.bootcamp_project.entity.*;
 import com.bootcampproject.bootcamp_project.enums.RoleEnum;
 import com.bootcampproject.bootcamp_project.exceptions.CategoryNotFoundException;
 import com.bootcampproject.bootcamp_project.exceptions.PasswordNotMatchedException;
+import com.bootcampproject.bootcamp_project.exceptions.TokenExpiredException;
 import com.bootcampproject.bootcamp_project.exceptions.UserNotFoundException;
 import com.bootcampproject.bootcamp_project.repository.*;
 import com.bootcampproject.bootcamp_project.utility.DomainUtils;
@@ -47,12 +48,13 @@ public class CustomerService {
 
     //--------------------------------------------To save a customer ----------------------------------------------------------
     @Transactional
-    public Boolean saveCustomer(CustomerDto customerDto) {
+    public Customer saveCustomer(CustomerDto customerDto) {
 
         User user = DomainUtils.toUser(customerDto, passwordEncoder);
 
         Customer customer = new Customer();
         customer.setContact(customerDto.getContact());
+        customer.setCreatedBy(DomainUtils.getCreatedBy());
         customer.setUser(user);// kyonki customer me mapping ki h.. isily customer me user set kraenge.. agar mapping user me ki hoti to
         // customer me user set krane ki zarurt nahi hoti.
         user.setCustomer(customer);
@@ -85,7 +87,7 @@ public class CustomerService {
         user.setIsActive(customerDto.isActive());
         customerRepository.save(customer);
         sendTokenToCustomer(user.getEmail(), token);
-        return true;
+        return customer;
     }
 
     //--------------------send token to customer to activate account ------------------------------------------------------------------
@@ -98,23 +100,24 @@ public class CustomerService {
 
     // ------------------------------------to activate account--------------------------------------------------------------------------------
     @Transactional
-    public String activateAccount(String token) {
-        if (Objects.isNull(token)) {
-            return "No token provided!";
-        }
+    public String activateAccount(String token) throws UserNotFoundException {
+//        if (Objects.isNull(token)) {
+//            return "No token provided!";
+//        }  jb b path variable se kuch b lete h to vo null kbi ni hota.. isily ye code run hi ni hoga.. isily ise ni likhenege
 
         Customer customer = customerRepository.findByAccountActivateToken(token);
         if (customer == null) {
-            return "No customer found with this token!";
+            throw new UserNotFoundException("No customer found with this token!");
         }
 
-        if (customer.getAccountActivateTokenGeneratedAt() < System.currentTimeMillis() - (1 * 60 * 1000)) {
+        if (customer.getAccountActivateTokenGeneratedAt() < System.currentTimeMillis() - (1000 * 3600 * 3)) {
             UUID uuid = UUID.randomUUID();
             customer.setAccountActivateToken(uuid.toString());
             customer.setAccountActivateTokenGeneratedAt(System.currentTimeMillis());
             customerRepository.save(customer);
             sendTokenToCustomer(customer.getUser().getEmail(), uuid);
             return "Your token has expired, please check your email for new activation link";
+
         }
 
         customer.getUser().setIsActive(true);
