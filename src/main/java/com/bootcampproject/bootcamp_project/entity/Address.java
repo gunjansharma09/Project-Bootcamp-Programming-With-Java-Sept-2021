@@ -17,6 +17,7 @@ public class Address extends AuditEntity implements Serializable {
     private String addressLine;
     private Integer zipCode;
     private String label;
+    private Boolean isDeleted=false;
 //    @ManyToOne(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "userId")
 //    private User userId; // userId

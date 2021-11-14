@@ -45,7 +45,10 @@ public class CustomerService {
 
     //--------------------------------------------To save a customer ----------------------------------------------------------
     @Transactional
-    public Customer saveCustomer(CustomerDto customerDto) {
+    public String registerCustomer(CustomerDto customerDto) {
+        Optional<User> optionalUser = userRepository.findByEmail(customerDto.getEmail());
+        if (optionalUser.isPresent())
+            throw new UserAlreadyExistsException("Customer registration failed. User already exists with this email id: " + customerDto.getEmail());
 
         User user = DomainUtils.toUser(customerDto, passwordEncoder);
 
@@ -58,13 +61,11 @@ public class CustomerService {
 
         List<Address> addresses = new ArrayList<>();
         if (customerDto.getAddress() != null) {
-
             /*addresses = customerDto
                     .getAddress()
                     .stream()
                     .map(addressDto -> DomainUtils.toAddress(addressDto))
                     .collect(Collectors.toList());*/
-
             for (AddressDto addressDto : customerDto.getAddress()) {
                 Address address = DomainUtils.toAddress(addressDto);
                 addresses.add(address);
@@ -84,7 +85,8 @@ public class CustomerService {
         user.setIsActive(customerDto.isActive());
         customerRepository.save(customer);
         sendTokenToCustomer(user.getEmail(), token);
-        return customer;
+        return "Customer registered successfully with email: " + customerDto.getEmail();
+
     }
 
     //--------------------send token to customer to activate account ------------------------------------------------------------------
@@ -104,10 +106,11 @@ public class CustomerService {
 
         Customer customer = customerRepository.findByAccountActivateToken(token);
         if (customer == null) {
-            throw new UserNotFoundException("No customer found with this token!");
+            throw new InvalidTokenException("Invalid token!");
         }
 
         if (customer.getAccountActivateTokenGeneratedAt() < System.currentTimeMillis() - (1000 * 3600 * 3)) {
+            // if (customer.getAccountActivateTokenGeneratedAt() < System.currentTimeMillis() - (1000 )) {
             UUID uuid = UUID.randomUUID();
             customer.setAccountActivateToken(uuid.toString());
             customer.setAccountActivateTokenGeneratedAt(System.currentTimeMillis());
@@ -162,8 +165,10 @@ public class CustomerService {
             // kyonki obviously addressDtos null hoga .. just declare kia h upper.
             for (int i = 0; i < user.getAddresses().size(); i++) {
                 Address address = user.getAddresses().get(i);
-                AddressDto addressDto = new AddressDto(address);
-                addressDtos.add(addressDto);
+                if (!address.getIsDeleted()) {
+                    AddressDto addressDto = new AddressDto(address);
+                    addressDtos.add(addressDto);
+                }
             }
         }
         return addressDtos;
@@ -259,21 +264,22 @@ public class CustomerService {
             throw new PasswordNotMatchedException("Password does not match with confirm password!");
 
         user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
         return "Password updated successfully!";
     }
 
     //------------------------------------to add address--------------------------------------------------------------------------------
 
-    public String addAddress(AddressDto addressDto, String email, Long id) {
+    public String addAddress(AddressDto addressDto, String email) {
 
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent())
             throw new EmailNotFoundException("User does not found with email " + email);
 
-        Optional<User> optionalUser1 = userRepository.findById(id);
-        if (!optionalUser1.isPresent())
-            throw new UserNotFoundException("User with id " + id + " is not available!");
+//        Optional<User> optionalUser1 = userRepository.findById(id);
+//        if (!optionalUser1.isPresent())
+//            throw new UserNotFoundException("User with id " + id + " is not available!");
 
         User user = optionalUser.get();
 
@@ -286,12 +292,14 @@ public class CustomerService {
 
     //----------------------------------delete address---------------------------------------------------------------------------------
     public String deleteAddress(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent())
-            throw new UserNotFoundException("User not found with id " + id);
+//        Optional<User> userOptional = userRepository.findById(id);
+//        if (userOptional.isPresent())
+//            throw new UserNotFoundException("User not found with id " + id);
+        Address address = addressRepository.getById(id);
+        address.setIsDeleted(true); // It is called soft delete
 
-        User user = userOptional.get();
-        addressRepository.deleteById(id);
+        //isdeleted vali valu ko set krenge true me , address ko save kra denge.. ise soft delete kehte h
+        addressRepository.save(address);
         //userRepository.save(user);
         return "User's address has been deleted successfully!";
 

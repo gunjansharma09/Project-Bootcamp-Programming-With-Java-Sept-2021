@@ -43,6 +43,36 @@ public class PublicController {
 //        else return "fail";
 //    }
 
+
+    @PostMapping("/register/customer")
+    public ResponseEntity<?> registerCustomer(@Valid @RequestBody CustomerDto customerDto, BindingResult result) {
+
+        if (!CollectionUtils.isEmpty(result.getAllErrors())) {
+            return new ResponseEntity<>(result.getAllErrors().stream().map(objectError -> {
+                return objectError.getDefaultMessage();
+            }).collect(Collectors.joining("\n")), HttpStatus.BAD_REQUEST);
+        }
+        if (Objects.isNull(customerDto.getEmail()) || customerDto.getEmail().trim().equals("")) {
+            return new ResponseEntity<>("No email provided ,", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!Objects.equals(customerDto.getPassword(), customerDto.getConfirmPassword()))
+            return new ResponseEntity<>("Your password does not match with confirm password ", HttpStatus.BAD_REQUEST);
+        try {
+            return new ResponseEntity<>(customerService.registerCustomer(customerDto), HttpStatus.OK);
+        } catch (UserNotFoundException userNotFoundException) {
+            log.error("User with email " + customerDto.getEmail() + "not found");
+            return new ResponseEntity<>(userNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidGSTNumberException | InvalidPasswordException | AlreadyExistsGSTException | UserAlreadyExistsException e) {
+            log.error(e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error(" Exception occurred in register customer " + customerDto.getEmail(), e);
+            return new ResponseEntity<>("Exception occurred in register seller " + customerDto.getEmail(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     //-------------------------------------------to register a seller -------------------------------------------------------------------------------
     @PostMapping("/register/seller")
     public ResponseEntity<String> registerSeller(@Valid @RequestBody SellerDto sellerDto, BindingResult result) {
@@ -59,16 +89,13 @@ public class PublicController {
         if (!Objects.equals(sellerDto.getPassword(), sellerDto.getConfirmPassword()))
             return new ResponseEntity<>("Your password does not match with confirm password ", HttpStatus.BAD_REQUEST);
         try {
-            return new ResponseEntity<>(sellerService.saveSeller(sellerDto), HttpStatus.OK);
+            return new ResponseEntity<>(sellerService.registerSeller(sellerDto), HttpStatus.OK);
         } catch (UserNotFoundException userNotFoundException) {
             log.error("User with email " + sellerDto.getEmail() + "not found");
             return new ResponseEntity<>(userNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (InvalidGSTNumberException | InvalidPasswordException | AlreadyExistsGSTException e) {
+        } catch (InvalidGSTNumberException | InvalidPasswordException | AlreadyExistsGSTException | UserAlreadyExistsException e) {
             log.error(e.getMessage(), e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (UserAlreadyExistsException e) {
-            log.error(e.getMessage(), e);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             log.error(" Exception occurred in register seller " + sellerDto.getEmail(), e);
             return new ResponseEntity<>("Exception occurred in register seller " + sellerDto.getEmail(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -115,25 +142,23 @@ public class PublicController {
             log.error(e.getMessage(), e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST); // server ki koi galati ni h . jaha se request aai h vha se h
         } catch (Exception e) {
-            log.error("Exception occurred in method updatePassword() ");
+            log.error("Exception occurred in method updatePassword() ",e);
             return new ResponseEntity<>("Exception occurred in updatePassword() ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //---------------------------to activate customer ----------------------------------------------------------------------
 
-    @GetMapping("/customer/activate/{token}")
+    @PutMapping("/customer/activate/{token}")
     public ResponseEntity<String> activateCustomer(@PathVariable String token) {
-        if (Objects.isNull(token) || token.trim().equals("")) {
-            return new ResponseEntity<>("No email provided ,", HttpStatus.BAD_REQUEST);
-        }
+
         try {
             return new ResponseEntity<>(customerService.activateAccount(token), HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            log.error("Exception occurred while activating account ");
+        } catch (UserNotFoundException | InvalidTokenException e) {
+            log.error(e.getMessage(), e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            log.error("Exception occurred while activating account ");
+            log.error("Exception occurred while activating account ", e);
             return new ResponseEntity<>("Exception occurred while activating account ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

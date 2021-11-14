@@ -23,4 +23,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "from category " +
             "where parent_id is null", nativeQuery = true)
     List<Category> findByCategoryIsNull();
+
+    List<Category> findByParentCategoryNotNull();
 }

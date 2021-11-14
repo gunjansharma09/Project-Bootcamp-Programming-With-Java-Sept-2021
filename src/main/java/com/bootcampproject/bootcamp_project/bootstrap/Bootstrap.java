@@ -67,7 +67,7 @@ public class Bootstrap implements ApplicationRunner {
             customerDto.setPassword("Customer@12");
             customerDto.setActive(false);
             customerDto.setAddress(new ArrayList<AddressDto>());
-            customerService.saveCustomer(customerDto);
+            customerService.registerCustomer(customerDto);
         }
 
         if (!userService.isUserByEmailExists(sellerEmail)) {
@@ -79,7 +79,7 @@ public class Bootstrap implements ApplicationRunner {
             sellerDto.setActive(false);
             sellerDto.setGst("06BZAHM6385P6Z2");
             sellerDto.setAddress(new AddressDto());
-            sellerService.saveSeller(sellerDto);
+            sellerService.registerSeller(sellerDto);
         }
 
 

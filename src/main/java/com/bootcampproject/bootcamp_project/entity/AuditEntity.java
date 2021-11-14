@@ -15,13 +15,13 @@ import java.util.Date;
 @Setter
 @EntityListeners(AuditingEntityListener.class) //help in auditing .
 public class AuditEntity {
-    @NotNull
+    //@NotNull // category.setCreatedBY
     @CreatedDate
     private Date dateCreated;
 
     @LastModifiedDate
     private Date lastUpdated;
-    @NotNull
+    //@NotNull
     private String createdBy;
     private String updatedBy;
 }

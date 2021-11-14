@@ -8,15 +8,19 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class AddressDto {
     private Long id;
     private String city;
     private String state;
     private String country;
     private String addressLine;
+    @Size(min=6,max = 6,message = "Zip code should be of length 6!")
     private Integer zipCode;
 
 

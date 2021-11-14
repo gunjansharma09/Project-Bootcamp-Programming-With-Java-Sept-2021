@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Data
@@ -16,6 +17,8 @@ import java.util.List;
 @SuperBuilder
 
 public class CustomerDto extends UserDto {
+    @Pattern(regexp = "(^$|[0-9]{10})",message = "Contact number must contain numeric value and must have 10 digits!!")
+
     private String contact;
     private List<AddressDto> address;
 }

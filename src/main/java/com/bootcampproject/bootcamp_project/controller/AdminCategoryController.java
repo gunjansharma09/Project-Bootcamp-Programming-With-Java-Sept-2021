@@ -6,7 +6,6 @@ import com.bootcampproject.bootcamp_project.entity.CategoryMetadataFieldValues;
 import com.bootcampproject.bootcamp_project.exceptions.DuplicateValueException;
 import com.bootcampproject.bootcamp_project.exceptions.NoValueExceptionException;
 import com.bootcampproject.bootcamp_project.service.AdminCategoryService;
-import com.bootcampproject.bootcamp_project.utility.SecurityContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,7 +41,8 @@ public class AdminCategoryController {
     @PostMapping("/add/category")
     public Category addCategory(@RequestParam String name, @RequestParam(required = false) Long parentId) {
 
-        return adminCategoryService.addCategory(name, parentId);
+        Category category = adminCategoryService.addCategory(name, parentId);
+        return category;
     }
 
     //-------------------------------------view a category-------------------------------------------------------------------------------

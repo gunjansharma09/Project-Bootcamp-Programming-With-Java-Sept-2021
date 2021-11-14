@@ -38,7 +38,7 @@ public class SellerController {
 
         String email = SecurityContextUtil.findAuthenticatedUser();
         if (Objects.isNull(email))
-            throw new NullPointerException("No email provided");
+            throw new EmailNotFoundException("No email provided");
         try {
             return new ResponseEntity<>(sellerService.viewProfile(email), HttpStatus.OK);
         } catch (UserNotFoundException e) {
@@ -123,8 +123,15 @@ public class SellerController {
             log.error("Exception occurred while updating address", e);
             return new ResponseEntity<>("Exception occurred while updating address !", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
-
+    //---------------------------------to update address--------------------------------------------------------------------------------------
+    @GetMapping("/list/categories")
+    public ResponseEntity<?> listCategories() {
+        String email = SecurityContextUtil.findAuthenticatedUser();
+        if (Objects.isNull(email))
+            return new ResponseEntity<>("User need to be logged in as seller", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(sellerService.listCategories(), HttpStatus.OK);
     }
 
     private List<String> validateSeller(SellerDto sellerDto) {

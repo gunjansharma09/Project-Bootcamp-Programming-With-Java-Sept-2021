@@ -3,13 +3,11 @@ package com.bootcampproject.bootcamp_project.service;
 import com.bootcampproject.bootcamp_project.dto.AddressDto;
 import com.bootcampproject.bootcamp_project.dto.SellerDto;
 import com.bootcampproject.bootcamp_project.dto.SellerProfileDto;
-import com.bootcampproject.bootcamp_project.entity.Address;
-import com.bootcampproject.bootcamp_project.entity.Role;
-import com.bootcampproject.bootcamp_project.entity.Seller;
-import com.bootcampproject.bootcamp_project.entity.User;
+import com.bootcampproject.bootcamp_project.entity.*;
 import com.bootcampproject.bootcamp_project.enums.RoleEnum;
 import com.bootcampproject.bootcamp_project.exceptions.*;
 import com.bootcampproject.bootcamp_project.repository.AddressRepository;
+import com.bootcampproject.bootcamp_project.repository.CategoryRepository;
 import com.bootcampproject.bootcamp_project.repository.SellerRepository;
 import com.bootcampproject.bootcamp_project.repository.UserRepository;
 import com.bootcampproject.bootcamp_project.utility.DomainUtils;
@@ -19,10 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 
@@ -42,12 +37,16 @@ public class SellerService {
 
     @Autowired
     private EmailService emailService;
+
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     //-------------------------------to save seller details--------------------------------------------------------------------------------
     @Transactional
-    public String saveSeller(SellerDto sellerDto) {
+    public String registerSeller(SellerDto sellerDto) {
         if (sellerRepository.countByGst(sellerDto.getGst()) > 0) {
             throw new AlreadyExistsGSTException("Already exists GST!");
         }
@@ -58,6 +57,8 @@ public class SellerService {
 
         // return new ResponseEntity<>("Seller registration failed. User already exists with this email id: " + sellerDto.getEmail(), HttpStatus.NOT_ACCEPTABLE);
         User user = DomainUtils.toUser(sellerDto, passwordEncoder);
+
+
         Seller seller = DomainUtils.toSeller(sellerDto);
         seller.setUser(user);
         user.setSeller(seller);
@@ -204,4 +205,33 @@ public class SellerService {
         return "Successfully updated address!";
     }
 
+    public List<Map<String, Object>> listCategories() {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        List<Category> categories = categoryRepository.findByParentCategoryNotNull();
+        categories.forEach(category -> {
+            Map<String, Object> objectMap = new LinkedHashMap<>();
+            result.add(objectMap);
+            objectMap.put("Category Id", category.getId());
+            objectMap.put("Category Name", category.getName());
+            if (category.getParentCategory() != null) {
+                objectMap.put("Category Parent Id", category.getParentCategory().getId());
+                objectMap.put("Category Parent Name", category.getParentCategory().getName());
+            }
+
+            Map<String, Object> categoryMetaDataFieldValuesMap = new LinkedHashMap<>();
+            objectMap.put("MetaDataFields", categoryMetaDataFieldValuesMap);
+
+            if (category.getCategoryMetadataFieldValues() != null) {
+                category
+                        .getCategoryMetadataFieldValues()
+                        .stream()
+                        .forEach(categoryMetadataFieldValues -> {
+                            categoryMetaDataFieldValuesMap.put(categoryMetadataFieldValues.getCategoryMetaDataField().getName(),
+                                    Arrays.asList(categoryMetadataFieldValues.getValue().split(",")));
+                        });
+            }
+        });
+        return result;
+    }
 }
