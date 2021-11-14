@@ -2,6 +2,8 @@ package com.bootcampproject.bootcamp_project.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 public class SellerProfileDto {
 
@@ -12,6 +14,7 @@ public class SellerProfileDto {
     private String companyContact;
     private String companyName;
     private String image;
+    @NotNull
     private String gst;
     private AddressDto addressDto;
 }

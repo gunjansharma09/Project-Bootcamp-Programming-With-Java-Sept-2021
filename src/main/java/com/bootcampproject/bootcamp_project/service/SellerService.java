@@ -10,6 +10,7 @@ import com.bootcampproject.bootcamp_project.entity.User;
 import com.bootcampproject.bootcamp_project.enums.RoleEnum;
 import com.bootcampproject.bootcamp_project.exceptions.PasswordNotMatchedException;
 import com.bootcampproject.bootcamp_project.exceptions.RegistrationFailedException;
+import com.bootcampproject.bootcamp_project.exceptions.UserAlreadyExistsException;
 import com.bootcampproject.bootcamp_project.exceptions.UserNotFoundException;
 import com.bootcampproject.bootcamp_project.repository.RoleRepository;
 import com.bootcampproject.bootcamp_project.repository.SellerRepository;
@@ -51,10 +52,11 @@ public class SellerService {
 
     //-------------------------------to save seller details--------------------------------------------------------------------------------
     @Transactional
-    public ResponseEntity<String> saveSeller(SellerDto sellerDto) {
+    public String saveSeller(SellerDto sellerDto) {
         Optional<User> optionalUser = userRepository.findByEmail(sellerDto.getEmail());
         if (optionalUser.isPresent())
-            return new ResponseEntity<>("Seller registration failed. User already exists with this email id: " + sellerDto.getEmail(), HttpStatus.NOT_ACCEPTABLE);
+            throw new UserAlreadyExistsException("Seller registration failed. User already exists with this email id: " + sellerDto.getEmail());
+        // return new ResponseEntity<>("Seller registration failed. User already exists with this email id: " + sellerDto.getEmail(), HttpStatus.NOT_ACCEPTABLE);
 
         User user = DomainUtils.toUser(sellerDto, passwordEncoder);
         Seller seller = DomainUtils.toSeller(sellerDto);
@@ -73,7 +75,8 @@ public class SellerService {
         user.setIsActive(sellerDto.isActive());
         userRepository.save(user);
         emailService.sendEmailAsync(user.getEmail(), "Welcome to online shopping site", "Hi,\\nWaiting for approval");
-        return new ResponseEntity<>("Seller registered successfully with email: " + sellerDto.getEmail(), HttpStatus.OK);
+        return "Seller registered successfully with email: " + sellerDto.getEmail();
+        // return new ResponseEntity<>("Seller registered successfully with email: " + sellerDto.getEmail(), HttpStatus.OK);
     }
 
     // --------------------------------------to view profile-----------------------------------------------------------------------

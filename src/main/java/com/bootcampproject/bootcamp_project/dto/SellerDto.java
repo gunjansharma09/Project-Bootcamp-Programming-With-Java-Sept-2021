@@ -4,15 +4,15 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Column;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Getter
+
 public class SellerDto extends UserDto {
-    @Column(unique = true)
-    @NonNull
+    @NotNull
     private String gst ;
     private String companyContact;
     private String companyName;

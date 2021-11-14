@@ -4,12 +4,15 @@ import com.bootcampproject.bootcamp_project.dto.UserDto;
 import com.bootcampproject.bootcamp_project.entity.Role;
 import com.bootcampproject.bootcamp_project.entity.User;
 import com.bootcampproject.bootcamp_project.enums.RoleEnum;
+import com.bootcampproject.bootcamp_project.exceptions.InvalidPasswordException;
 import com.bootcampproject.bootcamp_project.exceptions.InvalidTokenException;
+import com.bootcampproject.bootcamp_project.exceptions.UserDeactivateException;
 import com.bootcampproject.bootcamp_project.exceptions.UserNotFoundException;
 import com.bootcampproject.bootcamp_project.repository.CustomerRepository;
 import com.bootcampproject.bootcamp_project.repository.RoleRepository;
 import com.bootcampproject.bootcamp_project.repository.UserRepository;
 import com.bootcampproject.bootcamp_project.utility.DomainUtils;
+import com.bootcampproject.bootcamp_project.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,9 +59,9 @@ public class UserService {
     }
 
     //------------------ to send token via email to user ----------------------------------------------------------------------------------------
-    private void sendTokenViaEmailToUser(String email, UUID uuid) {
+    private void sendTokenViaEmailToUser(String email, UUID uuid, String subject) {
         String url = "http://localhost:8080/set/password/" + uuid.toString();
-        emailService.sendEmailAsync(email, "Welcome to online shopping site", "Hi,\nUse link mentioned below to restore your password\n" + url);
+        emailService.sendEmailAsync(email, subject, "Hi,\nUse link mentioned below to restore your password\n" + url);
     }
 
     //-----------------------------------------------to forgot password via email----------------------------------------------------------------------
@@ -67,23 +70,28 @@ public class UserService {
         if (!userOptional.isPresent())
             throw new UserNotFoundException("User not found with email " + email);
         User user = userOptional.get();
+
+        if (!user.getIsActive())
+            throw new UserDeactivateException("User account is deactivate ");
+
+
         if (user.getForgotPasswordToken() == null) {
-            sendToken(user);
+            sendToken(user, "Reset password");
             return "Password restore link has been sent over email!";
         } else {
-            sendToken(user);
+            sendToken(user, "New password link"); // change, use subject here
             return "A new email has been sent with a link set your new password.";
         }
     }
 
     //-----------------------------------------to send token----------------------------------------------------------------------------------
 
-    private void sendToken(User user) {
+    private void sendToken(User user, String subject) {
         UUID uuid = UUID.randomUUID();
         user.setForgotPasswordToken(uuid.toString());
         user.setForgotPasswordGeneratedTokenAt(System.currentTimeMillis());
         userRepository.save(user);
-        sendTokenViaEmailToUser(user.getEmail(), uuid);
+        sendTokenViaEmailToUser(user.getEmail(), uuid, subject);
     }
 
     // -------------------------------to update password----------------------------------------------------------------------------------------
@@ -97,20 +105,29 @@ public class UserService {
 
         User user = userOptional.get();
 
+        if (!user.getIsActive())
+            throw new UserDeactivateException("User is deactivated! ");
+
+        if (!Validator.isValidatedPassword(newPassword))
+            throw new InvalidPasswordException("Password should contains 8-15 Characters with atleast 1 Lower case, 1 Upper case, 1 Special Character, 1 Number!");
+
         //Case 2: Expired token
 
         if (user.getForgotPasswordGeneratedTokenAt() < System.currentTimeMillis() - (15 * 60 * 1000)) {
-            sendToken(user);
+            sendToken(user, "");
             return "Your token has expired. A new token has been shared over email.";
         }
         //Case 2 completed
 
         //Case 3: Happy Flow
-        user.setPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
         user.setForgotPasswordToken(null);
         user.setForgotPasswordGeneratedTokenAt(null);
         userRepository.save(user);
-        return "Your password is successfully created!";
+
+        emailService.sendEmailAsync(user.getEmail(), "Password successfully updated!", "");
+
+        return "Your password is successfully updated!";
         //Case 3 completed
     }
 

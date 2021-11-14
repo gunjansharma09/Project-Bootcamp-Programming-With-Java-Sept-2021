@@ -2,9 +2,7 @@ package com.bootcampproject.bootcamp_project.controller;
 
 import com.bootcampproject.bootcamp_project.dto.CustomerDto;
 import com.bootcampproject.bootcamp_project.dto.SellerDto;
-import com.bootcampproject.bootcamp_project.exceptions.InvalidPasswordException;
-import com.bootcampproject.bootcamp_project.exceptions.RegistrationFailedException;
-import com.bootcampproject.bootcamp_project.exceptions.UserNotFoundException;
+import com.bootcampproject.bootcamp_project.exceptions.*;
 import com.bootcampproject.bootcamp_project.service.CustomerService;
 import com.bootcampproject.bootcamp_project.service.SellerService;
 import com.bootcampproject.bootcamp_project.service.UserService;
@@ -45,7 +43,19 @@ public class PublicController {
     @PostMapping("/register/seller")
     public ResponseEntity<String> registerSeller(@Valid @RequestBody SellerDto sellerDto) {
         // TODO Add seller validations apart from annotations in user dto if required
-        return sellerService.saveSeller(sellerDto);
+        if (Objects.isNull(sellerDto.getEmail()) || sellerDto.getEmail().trim().equals("")) {
+            return new ResponseEntity<>("No email provided ,", HttpStatus.BAD_REQUEST);
+        }
+        try {
+            return new ResponseEntity<>(sellerService.saveSeller(sellerDto), HttpStatus.OK);
+        } catch (UserNotFoundException userNotFoundException) {
+            log.error("User with email " + sellerDto.getEmail() + "not found");
+            return new ResponseEntity<>(userNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            log.error("Exception occurred in method forgotPassword() with email " + sellerDto.getEmail());
+            return new ResponseEntity<>("Exception occur in forgotPassword() with email " + sellerDto.getEmail(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
 
@@ -60,6 +70,9 @@ public class PublicController {
         } catch (UserNotFoundException userNotFoundException) {
             log.error("User with email " + email + "not found");
             return new ResponseEntity<>(userNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (UserDeactivateException userDeactivateException) {
+            log.error("User is deactivated with email " + email);
+            return new ResponseEntity<>(userDeactivateException.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             log.error("Exception occurred in method forgotPassword() with email " + email);
             return new ResponseEntity<>("Exception occur in forgotPassword() with email " + email, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -68,16 +81,25 @@ public class PublicController {
 
     //-----------------------------------to update password ------------------------------------------------------------------
 
-    @PutMapping("set/password")
-    public ResponseEntity<String> updatePassword(@RequestParam @NotBlank String token, @RequestParam @NotBlank @Size(min = 8) @Valid String password) {
+    @PatchMapping("/set/password/{token}")
+    public ResponseEntity<String> updatePassword(@PathVariable @NotBlank String token, @RequestParam @NotBlank @Size(min = 8) @Valid String password, @RequestParam @NotBlank @Size(min = 8) @Valid String confirmPassword) {
         try {
-            return new ResponseEntity<>(userService.updatePassword(token, password), HttpStatus.OK);
-        } catch (InvalidPasswordException invalidPasswordException) {
-            log.error("Passowrd must contain 1 Upper case, 1 lower case , 1 special symbol and 1 number ");
-            return new ResponseEntity<>(invalidPasswordException.getMessage(), HttpStatus.NOT_FOUND);
+            if (!Objects.equals(password, confirmPassword))
+                return new ResponseEntity<>("Your password does not match with confirm password ", HttpStatus.BAD_REQUEST);
+            else
+                return new ResponseEntity<>(userService.updatePassword(token, password), HttpStatus.OK);
+        } catch (InvalidTokenException e) {
+            log.error(e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (UserDeactivateException e) {
+            log.error(e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN); // agar user mil gya h pr dwactivate h account
+        } catch (InvalidPasswordException e) {
+            log.error(e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST); // server ki koi galati ni h . jaha se request aai h vha se h
         } catch (Exception e) {
             log.error("Exception occurred in method updatePassword() ");
-            return new ResponseEntity<>("Exception occurred in updatePassowrd() ", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Exception occurred in updatePassword() ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

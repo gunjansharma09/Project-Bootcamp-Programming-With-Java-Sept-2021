@@ -1,11 +1,10 @@
 package com.bootcampproject.bootcamp_project.configuration;
 
-import com.bootcampproject.bootcamp_project.entity.Role;
 import com.bootcampproject.bootcamp_project.entity.User;
 
 
 import com.bootcampproject.bootcamp_project.exceptions.AccountLockedException;
-import com.bootcampproject.bootcamp_project.exceptions.AccountNotActiveException;
+import com.bootcampproject.bootcamp_project.exceptions.UserDeactivateException;
 import com.bootcampproject.bootcamp_project.repository.UserRepository;
 import com.bootcampproject.bootcamp_project.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +58,7 @@ public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
                 throw new AccountLockedException("Your Account is locked.Please contact with support team!");
             }
             if (!user.getIsActive()) {
-                throw new AccountNotActiveException("Your Account is de-activated");
+                throw new UserDeactivateException("Your Account is de-activated");
             }
             if (!passwordEncoder.matches(presentedPassword, user.getPassword())) {
                 logger.debug("Authentication failed: password does not match stored value");

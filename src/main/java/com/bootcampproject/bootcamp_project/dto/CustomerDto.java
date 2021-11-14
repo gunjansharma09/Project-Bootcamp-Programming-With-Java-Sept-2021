@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Getter
+
 public class CustomerDto extends UserDto {
     private String contact;
     private List<AddressDto> address;

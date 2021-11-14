@@ -77,6 +77,7 @@ public class Bootstrap implements ApplicationRunner {
             sellerDto.setLastName("Seller");
             sellerDto.setPassword("Seller@12");
             sellerDto.setActive(false);
+            sellerDto.setGst("12345678");
             sellerDto.setAddress(new AddressDto());
             sellerService.saveSeller(sellerDto);
         }

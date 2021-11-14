@@ -13,10 +13,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Getter
 @Data
 public class UserDto {
-    @Column(unique = true)
     @NotNull
     @Email
     private String email;
@@ -30,6 +28,8 @@ public class UserDto {
     @NotNull
     @NotBlank(message = "password is mandatory")
     private String password;
+    @NotNull
+    @NotBlank(message = "confirm password is mandatory")
     private String confirmPassword;
     private String resetPassword;
     private boolean isActive;
