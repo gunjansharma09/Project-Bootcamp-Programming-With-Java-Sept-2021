@@ -43,7 +43,7 @@ public class CustomerController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Exception occurred while displaying profile ", e);
-            return new ResponseEntity<>("Exception occurred while displaying profile ", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Exception occurred while displaying profile ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -61,7 +61,7 @@ public class CustomerController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Exception occurred while displaying address ", e);
-            return new ResponseEntity<>("Exception occurred while displaying address ", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Exception occurred while displaying address ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -78,7 +78,7 @@ public class CustomerController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Exception occurred while updating profile! ", e);
-            return new ResponseEntity<>("Exception occurred while updating profile !", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Exception occurred while updating profile !", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -95,7 +95,7 @@ public class CustomerController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Exception occurred while updating address ", e);
-            return new ResponseEntity<>("Exception occurred while updating address ", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Exception occurred while updating address ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -116,7 +116,7 @@ public class CustomerController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
         } catch (Exception e) {
             log.error("Exception occurred while updating password ", e);
-            return new ResponseEntity<>("Exception occurred while updating password ! ", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Exception occurred while updating password ! ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
 
@@ -135,7 +135,7 @@ public class CustomerController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Exception occurred while adding address ", e);
-            return new ResponseEntity<>("Exception occurred while adding address ", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Exception occurred while adding address ", HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
 
@@ -152,7 +152,7 @@ public class CustomerController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Exception occurred while deleting address ", e);
-            return new ResponseEntity<>("Exception occurred while deleting address !", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Exception occurred while deleting address !", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -167,7 +167,7 @@ public class CustomerController {
             return new ResponseEntity<>(customerService.categoryList(id), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Exception occurred while listing all categories !", e);
-            return new ResponseEntity<>("Exception occurred while listing all categories !", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Exception occurred while listing all categories !", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

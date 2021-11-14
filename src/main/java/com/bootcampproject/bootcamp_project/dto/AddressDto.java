@@ -12,14 +12,16 @@ import javax.persistence.ManyToOne;
 @Data
 @NoArgsConstructor
 public class AddressDto {
-
+    private Long id;
     private String city;
     private String state;
     private String country;
     private String addressLine;
     private Integer zipCode;
 
+
     public AddressDto(Address address) {
+        this.id = address.getId();
         this.city = address.getCity();
         this.state = address.getState();
         this.country = address.getCountry();

@@ -11,6 +11,7 @@ public class Validator {
         Matcher m = p.matcher(password);
         return m.matches();
     }
+
     public static boolean isValidatedGST(String gst) {
         String regex = "^[0-9]{2}[A-Z]{5}[0-9]{4}"
                 + "[A-Z]{1}[1-9A-Z]{1}"
@@ -28,5 +29,13 @@ public class Validator {
 				Z represents the 14th character should be Z.
 [0-9A-Z]{1} represents the 15th character should be an alphabet or a number.
 				$ represents the ending of the string*/
+    }
+
+
+    public static boolean isValidatedContact(String contact) {
+        String regex = "(^$|[0-9]{10})";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(contact);
+        return m.matches();
     }
 }

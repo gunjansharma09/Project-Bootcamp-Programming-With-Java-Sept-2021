@@ -9,6 +9,7 @@ import com.bootcampproject.bootcamp_project.entity.Seller;
 import com.bootcampproject.bootcamp_project.entity.User;
 import com.bootcampproject.bootcamp_project.enums.RoleEnum;
 import com.bootcampproject.bootcamp_project.exceptions.*;
+import com.bootcampproject.bootcamp_project.repository.AddressRepository;
 import com.bootcampproject.bootcamp_project.repository.SellerRepository;
 import com.bootcampproject.bootcamp_project.repository.UserRepository;
 import com.bootcampproject.bootcamp_project.utility.DomainUtils;
@@ -41,6 +42,8 @@ public class SellerService {
 
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private AddressRepository addressRepository;
 
     //-------------------------------to save seller details--------------------------------------------------------------------------------
     @Transactional
@@ -163,43 +166,41 @@ public class SellerService {
 
         User user = optionalUser.get();
         user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
         return "password has been updated successfully!";
     }
 
     //---------------------to update address-------------------------------------------------------------------------------------------
 
-    public String updateAddress(AddressDto addressDto, String email) {
-
+    public String updateAddress(AddressDto addressDto, String email, Long id) {
+        Address address = addressRepository.getById(id);
+//        if (address == null) {
+//            throw new AddressNotFoundException("Address not found !");
+//        }
         Optional<User> optionalUser = userRepository.findByEmail(email);
         //  user ho b sakta h nahi b.. isily optional <User> use krte h.
         if (!optionalUser.isPresent())
             throw new UserNotFoundException("User is not found with email " + email);
         User user = optionalUser.get();
 
-        if (Objects.isNull(addressDto))
-            throw new AddressNotFoundException("Address information is null");
-
-        if (user.getAddresses() != null && user.getAddresses().size() > 0) {
-            Address address = user.getAddresses().get(0);
-
-            if (addressDto.getAddressLine() != null) {
-                address.setAddressLine(addressDto.getAddressLine());
-            }
-            if (addressDto.getCountry() != null) {
-                address.setCountry(addressDto.getCountry());
-            }
-            if (addressDto.getCity() != null) {
-                address.setCity(addressDto.getCity());
-            }
-            if (addressDto.getState() != null) {
-                address.setState(addressDto.getState());
-            }
-            if (addressDto.getZipCode() != null) {
-                address.setZipCode(addressDto.getZipCode());
-            }
-
-            userRepository.save(user);
+        if (addressDto.getAddressLine() != null) {
+            address.setAddressLine(addressDto.getAddressLine());
         }
+        if (addressDto.getCountry() != null) {
+            address.setCountry(addressDto.getCountry());
+        }
+        if (addressDto.getCity() != null) {
+            address.setCity(addressDto.getCity());
+        }
+        if (addressDto.getState() != null) {
+            address.setState(addressDto.getState());
+        }
+        if (addressDto.getZipCode() != null) {
+            address.setZipCode(addressDto.getZipCode());
+        }
+        addressRepository.save(address);
+
+
         return "Successfully updated address!";
     }
 
