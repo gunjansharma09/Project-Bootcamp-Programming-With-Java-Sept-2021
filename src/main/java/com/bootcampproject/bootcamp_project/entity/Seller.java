@@ -28,6 +28,7 @@ public class Seller extends AuditEntity implements Serializable {
     @NotBlank
     @Column(unique = true)
     private String gst;
+    @Pattern(regexp="(^$|[0-9]{10})")
     private String companyContact;
     private String companyName;
 

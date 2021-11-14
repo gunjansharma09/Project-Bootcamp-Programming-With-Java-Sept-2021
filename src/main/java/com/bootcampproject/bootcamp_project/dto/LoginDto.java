@@ -13,19 +13,19 @@ import javax.validation.constraints.NotNull;
 public class LoginDto {
 
     @NotNull
-    @NotEmpty
+    @NotEmpty(message = "First name can not be empty!")
     private String firstName;
 
     @NotNull
-    @NotEmpty
+    @NotEmpty(message = "Last name can not be empty!")
     private String lastName;
 
     @NotNull
-    @NotEmpty
+    @NotEmpty(message = "Password should contains 8-15 Characters with atleast 1 Lower case, 1 Upper case, 1 Special Character, 1 Number")
     private String password;
     private String matchingPassword;
 
     @NotNull
-    @NotEmpty
+    @NotEmpty(message = "Email should be valid!")
     private String email;
 }

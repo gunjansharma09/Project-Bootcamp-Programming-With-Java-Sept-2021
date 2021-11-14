@@ -6,6 +6,7 @@ import com.bootcampproject.bootcamp_project.dto.UserDto;
 import com.bootcampproject.bootcamp_project.entity.Address;
 import com.bootcampproject.bootcamp_project.entity.Seller;
 import com.bootcampproject.bootcamp_project.entity.User;
+import com.bootcampproject.bootcamp_project.exceptions.InvalidGSTNumberException;
 import com.bootcampproject.bootcamp_project.exceptions.InvalidPasswordException;
 import com.bootcampproject.bootcamp_project.validator.Validator;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,6 +50,10 @@ public class DomainUtils {
         seller.setCompanyName(sellerDto.getCompanyName());
         seller.setGst(sellerDto.getGst());
         seller.setCreatedBy(getCreatedBy());
+
+        if (!Validator.isValidatedGST(sellerDto.getGst())) {
+            throw new InvalidGSTNumberException("Please provide a valid GST number");
+        }
         return seller;
     }
 

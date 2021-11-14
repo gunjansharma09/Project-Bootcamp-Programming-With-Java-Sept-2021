@@ -10,13 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -33,7 +35,9 @@ public class PublicController {
 
     //--------------------------------------------------to register a customer ------------------------------------------------------------------
 //    @PostMapping("/register/customer")
-//    public String registerCustomer(@Valid @RequestBody CustomerDto customerDto) {
+//    public ResponseEntity<String> registerCustomer(@Valid @RequestBody CustomerDto customerDto) {
+//try
+//{return new ResponseEntity<>(customerService.saveCustomer(customerDto)}
 //        if (customerService.saveCustomer(customerDto))
 //            return "success";
 //        else return "fail";
@@ -41,21 +45,34 @@ public class PublicController {
 
     //-------------------------------------------to register a seller -------------------------------------------------------------------------------
     @PostMapping("/register/seller")
-    public ResponseEntity<String> registerSeller(@Valid @RequestBody SellerDto sellerDto) {
+    public ResponseEntity<String> registerSeller(@Valid @RequestBody SellerDto sellerDto, BindingResult result) {
         // TODO Add seller validations apart from annotations in user dto if required
+        if (!CollectionUtils.isEmpty(result.getAllErrors())) {
+            return new ResponseEntity<>(result.getAllErrors().stream().map(objectError -> {
+                return objectError.getDefaultMessage();
+            }).collect(Collectors.joining("\n")), HttpStatus.BAD_REQUEST);
+        }
         if (Objects.isNull(sellerDto.getEmail()) || sellerDto.getEmail().trim().equals("")) {
             return new ResponseEntity<>("No email provided ,", HttpStatus.BAD_REQUEST);
         }
+
+        if (!Objects.equals(sellerDto.getPassword(), sellerDto.getConfirmPassword()))
+            return new ResponseEntity<>("Your password does not match with confirm password ", HttpStatus.BAD_REQUEST);
         try {
             return new ResponseEntity<>(sellerService.saveSeller(sellerDto), HttpStatus.OK);
         } catch (UserNotFoundException userNotFoundException) {
             log.error("User with email " + sellerDto.getEmail() + "not found");
             return new ResponseEntity<>(userNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidGSTNumberException | InvalidPasswordException | AlreadyExistsGSTException e) {
+            log.error(e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (UserAlreadyExistsException e) {
+            log.error(e.getMessage(), e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
-            log.error("Exception occurred in method forgotPassword() with email " + sellerDto.getEmail());
-            return new ResponseEntity<>("Exception occur in forgotPassword() with email " + sellerDto.getEmail(), HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error(" Exception occurred in register seller " + sellerDto.getEmail(), e);
+            return new ResponseEntity<>("Exception occurred in register seller " + sellerDto.getEmail(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
 

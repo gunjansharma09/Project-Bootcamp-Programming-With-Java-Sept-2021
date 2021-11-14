@@ -14,7 +14,7 @@ public class SellerProfileDto {
     private String companyContact;
     private String companyName;
     private String image;
-    @NotNull
+    @NotNull(message = "GST should be valid as per govt. norms!")
     private String gst;
     private AddressDto addressDto;
 }

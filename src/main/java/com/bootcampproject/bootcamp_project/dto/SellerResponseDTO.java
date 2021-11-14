@@ -4,12 +4,15 @@ import com.bootcampproject.bootcamp_project.entity.Seller;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.persistence.Column;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 
 public class SellerResponseDTO extends UserResponseDTO {
     private String gst;
     private String companyContact;
+    @Column(unique = true)
     private String companyName;
 
     public static SellerResponseDTO mapper(Seller seller) {

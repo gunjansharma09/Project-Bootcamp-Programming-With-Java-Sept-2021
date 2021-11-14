@@ -5,10 +5,7 @@ import com.bootcampproject.bootcamp_project.dto.CustomerDto;
 import com.bootcampproject.bootcamp_project.dto.CustomerProfileDto;
 import com.bootcampproject.bootcamp_project.entity.*;
 import com.bootcampproject.bootcamp_project.enums.RoleEnum;
-import com.bootcampproject.bootcamp_project.exceptions.CategoryNotFoundException;
-import com.bootcampproject.bootcamp_project.exceptions.PasswordNotMatchedException;
-import com.bootcampproject.bootcamp_project.exceptions.TokenExpiredException;
-import com.bootcampproject.bootcamp_project.exceptions.UserNotFoundException;
+import com.bootcampproject.bootcamp_project.exceptions.*;
 import com.bootcampproject.bootcamp_project.repository.*;
 import com.bootcampproject.bootcamp_project.utility.DomainUtils;
 import lombok.AllArgsConstructor;
@@ -130,8 +127,7 @@ public class CustomerService {
     //---------------------------- to view profile-------------------------------------------------------------------------------------
 
     public CustomerProfileDto viewProfile(String email) {
-        if (Objects.isNull(email))
-            throw new NullPointerException("No email provided!");
+
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent())
@@ -152,8 +148,7 @@ public class CustomerService {
     //------------------------------------to view address-----------------------------------------------------------------
 
     public List<AddressDto> viewAddress(String email) {
-        if (Objects.isNull(email))
-            throw new NullPointerException("No email provided!");
+
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent())
@@ -175,9 +170,8 @@ public class CustomerService {
     }
 
     //--------------------------------------to update profile-------------------------------------------------------------------------
-    public String update(CustomerDto customerDto, String email) {
-        if (Objects.isNull(email))
-            throw new NullPointerException("Email can not be null");
+    public String updateCustomerProfile(CustomerDto customerDto, String email) {
+
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent())
             throw new UserNotFoundException("No such user found with email " + email);
@@ -215,14 +209,13 @@ public class CustomerService {
     //---------------------------------------to update address-------------------------------------------------------------------------
 
     public String updateAddress(AddressDto addressDto, String email) {
-        if (Objects.isNull(email))
-            throw new NullPointerException("Email can not be null");
+
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent())
             throw new UserNotFoundException("User is not found with email " + email);
         User user = optionalUser.get();
         if (Objects.isNull(addressDto))
-            throw new NullPointerException("Address information is null");
+            throw new AddressNotFoundException("Address information is null");
 
         List<AddressDto> addressDtos = new ArrayList<>();
 
@@ -252,8 +245,7 @@ public class CustomerService {
 
     //-----------------------------------to update password-------------------------------------------------------------------------
     public String updatePassword(String password, String confirmPassword, String email) {
-        if (Objects.isNull(email))
-            throw new NullPointerException("Email can not be null");
+
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent())
@@ -261,7 +253,7 @@ public class CustomerService {
         User user = optionalUser.get();
 
         if (Objects.isNull(password) && Objects.isNull(confirmPassword) && !(password.length() > 2) && !(confirmPassword.length() > 0)) {
-            throw new NullPointerException("Password or confirm password can not be null !");
+            throw new NoPasswordFoundException("Password or confirm password can not be null !");
         }
         if (!password.equals(confirmPassword))
             throw new PasswordNotMatchedException("Password does not match with confirm password!");
@@ -273,12 +265,11 @@ public class CustomerService {
     //------------------------------------to add address--------------------------------------------------------------------------------
 
     public String addAddress(AddressDto addressDto, String email, Long id) {
-        if (Objects.isNull(email))
-            throw new NullPointerException("Email can not be null!");
+
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent())
-            throw new UserNotFoundException("User does not found with email " + email);
+            throw new EmailNotFoundException("User does not found with email " + email);
 
         Optional<User> optionalUser1 = userRepository.findById(id);
         if (!optionalUser1.isPresent())
