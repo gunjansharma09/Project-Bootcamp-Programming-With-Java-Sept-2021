@@ -19,10 +19,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 //    List<Map<Object, Object>> findByParentCategory(Long value);
 
 
-    @Query(value = "select id,name " +
+    /*@Query(value = "select id,name " +
             "from category " +
             "where parent_id is null", nativeQuery = true)
-    List<Category> findByCategoryIsNull();
+    List<Category> findByCategoryIsNull();*/
 
     List<Category> findByParentCategoryNotNull();
 }

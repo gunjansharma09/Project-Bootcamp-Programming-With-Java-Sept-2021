@@ -104,9 +104,8 @@ public class CustomerController {
         if (Objects.isNull(email))
             throw new EmailNotFoundException("Email can not be null");
 
-
         try {
-            return new ResponseEntity<>(customerService.updateAddress(addressDto, email), HttpStatus.OK);
+            return new ResponseEntity<>(customerService.updateAddress(addressDto, email, id), HttpStatus.OK);
         } catch (UserNotFoundException | AddressNotFoundException e) {
             log.error(e.getMessage(), e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

@@ -15,8 +15,6 @@ public class ProductVariation extends AuditEntity implements Serializable {
     private double price;
     private int quantityAvailable;
     private String primaryImageName;
-
-
     private boolean isActive;
 
     @ManyToOne
@@ -29,7 +27,6 @@ public class ProductVariation extends AuditEntity implements Serializable {
             joinColumns = @JoinColumn(name = "productVariation_id"),
             inverseJoinColumns = @JoinColumn(name = "orderProduct_id"))
     private List<OrderProduct> orderProducts;
-
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(

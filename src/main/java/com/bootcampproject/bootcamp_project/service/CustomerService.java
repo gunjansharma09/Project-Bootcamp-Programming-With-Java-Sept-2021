@@ -213,39 +213,34 @@ public class CustomerService {
 
     //---------------------------------------to update address-------------------------------------------------------------------------
 
-    public String updateAddress(AddressDto addressDto, String email) {
-
+    public String updateAddress(AddressDto addressDto, String email, Long id) {
+        Address address = addressRepository.getById(id);
+//        if (address == null) {
+//            throw new AddressNotFoundException("Address not found !");
+//        }
         Optional<User> optionalUser = userRepository.findByEmail(email);
+        //  user ho b sakta h nahi b.. isily optional <User> use krte h.
         if (!optionalUser.isPresent())
             throw new UserNotFoundException("User is not found with email " + email);
         User user = optionalUser.get();
-        if (Objects.isNull(addressDto))
-            throw new AddressNotFoundException("Address information is null");
 
-        List<AddressDto> addressDtos = new ArrayList<>();
-
-        if (user.getAddresses() != null & user.getAddresses().size() > 0) {
-            for (int i = 0; i < user.getAddresses().size(); i++) {
-                Address address = user.getAddresses().get(i);
-                if (addressDto.getAddressLine() != null) {
-                    address.setAddressLine(addressDto.getAddressLine());
-                }
-                if (addressDto.getState() != null) {
-                    address.setState(addressDto.getState());
-                }
-                if (addressDto.getCity() != null) {
-                    address.setCity(addressDto.getCity());
-                }
-                if (addressDto.getCountry() != null) {
-                    address.setCountry(addressDto.getCountry());
-                }
-                if (addressDto.getZipCode() != null) {
-                    address.setZipCode(addressDto.getZipCode());
-                }
-            }
-            userRepository.save(user);
+        if (addressDto.getAddressLine() != null) {
+            address.setAddressLine(addressDto.getAddressLine());
         }
-        return "Address updated successfully!";
+        if (addressDto.getCountry() != null) {
+            address.setCountry(addressDto.getCountry());
+        }
+        if (addressDto.getCity() != null) {
+            address.setCity(addressDto.getCity());
+        }
+        if (addressDto.getState() != null) {
+            address.setState(addressDto.getState());
+        }
+        if (addressDto.getZipCode() != null) {
+            address.setZipCode(addressDto.getZipCode());
+        }
+        addressRepository.save(address);
+        return "Successfully updated address!";
     }
 
     //-----------------------------------to update password-------------------------------------------------------------------------
@@ -321,7 +316,7 @@ public class CustomerService {
                 throw new CategoryNotFoundException("Invalid category Id");
             }
         } else {
-            List<Category> category = categoryRepository.findByCategoryIsNull();
+            //List<Category> category = categoryRepository.findByCategoryIsNull();
         }
         return null;
     }

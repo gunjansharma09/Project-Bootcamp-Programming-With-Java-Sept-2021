@@ -1,11 +1,7 @@
 package com.bootcampproject.bootcamp_project.utility;
 
-import com.bootcampproject.bootcamp_project.dto.AddressDto;
-import com.bootcampproject.bootcamp_project.dto.SellerDto;
-import com.bootcampproject.bootcamp_project.dto.UserDto;
-import com.bootcampproject.bootcamp_project.entity.Address;
-import com.bootcampproject.bootcamp_project.entity.Seller;
-import com.bootcampproject.bootcamp_project.entity.User;
+import com.bootcampproject.bootcamp_project.dto.*;
+import com.bootcampproject.bootcamp_project.entity.*;
 import com.bootcampproject.bootcamp_project.exceptions.InvalidGSTNumberException;
 import com.bootcampproject.bootcamp_project.exceptions.InvalidPasswordException;
 import com.bootcampproject.bootcamp_project.validator.Validator;
@@ -55,6 +51,34 @@ public class DomainUtils {
             throw new InvalidGSTNumberException("Please provide a valid GST number");
         }
         return seller;
+    }
+
+    public static Product toProduct(ProductDTO productDTO) {
+        Product product = new Product();
+        product.setProductName(productDTO.getName());
+        product.setProductReview(product.getProductReview());
+        product.setProductDescription(productDTO.getDescription());
+        product.setActive(product.isActive());
+        product.setCancellable(productDTO.isCancellable());
+        product.setBrand(productDTO.getBrand());
+        product.setCreatedBy(getCreatedBy());
+        return product;
+    }
+
+    public static void updateProduct(ProductUpdateDTO productUpdateDTO, Product product) {
+        product.setProductName(productUpdateDTO.getName());
+        product.setProductDescription(productUpdateDTO.getDescription());
+        product.setCancellable(productUpdateDTO.isCancellable());
+        product.setReturnable(productUpdateDTO.isReturnable());
+    }
+
+    public static ProductVariation toProductVariation(ProductVariationDTO productVariationDTO) {
+        ProductVariation productVariation = new ProductVariation();
+        productVariation.setActive(productVariationDTO.isActive());
+        productVariation.setQuantityAvailable(productVariationDTO.getQuantityAvailable());
+        productVariation.setPrimaryImageName(productVariationDTO.getPrimaryImageName());
+        productVariation.setPrice(productVariationDTO.getPrice());
+        return productVariation;
     }
 
     public static String getCreatedBy() {

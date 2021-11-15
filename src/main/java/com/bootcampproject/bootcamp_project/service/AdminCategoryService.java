@@ -30,7 +30,7 @@ public class AdminCategoryService {
 
     //--------------------------------to add metadata field-------------------------------------------------------------------
     public CategoryMetaDataField addCategoryMetadataField(String name) {
-        if (name == null && name.equals(""))
+        if (name == null || name.equals(""))
             throw new NullPointerException("Name cannot be null or empty");
 
         Optional<CategoryMetaDataField> optionalCategoryMetaDataField = categoryMetadataFieldRepository.findByName(name);
@@ -61,6 +61,9 @@ public class AdminCategoryService {
     //------------------------------to add a category-------------------------------------------------------------------
 
     public Category addCategory(String name, Long parentId) {
+        if (name == null || name.equals(""))
+            throw new NullPointerException("Name cannot be null or empty");
+
         Optional<Category> optionalCategoryName = categoryRepository.findByName(name);
         if (optionalCategoryName.isPresent())
             throw new CategoryAlreadyExistsException("Category is already exists with name " + name);

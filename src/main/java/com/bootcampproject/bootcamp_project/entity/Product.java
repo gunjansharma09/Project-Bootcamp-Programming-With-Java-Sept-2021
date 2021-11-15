@@ -11,18 +11,19 @@ import java.util.List;
 public class Product extends AuditEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long productId;
+    private long id;
     private String productName;
     private String productDescription;
 
 
     private boolean isCancellable;
+    private boolean isReturnable;
     private String brand;
 
 
     private boolean isActive;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductVariation> productVariation;
 
 
